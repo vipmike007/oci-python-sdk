@@ -70,9 +70,9 @@ identity = oci.identity.IdentityClient(config)
 
 #  Timespan defined by variables start_time and end_time(today).
 #  ListEvents expects timestamps into RFC3339 format.
-#  For the purposes of sample script, logs of last 1 days.
+#  For the purposes of sample script, logs of last 5 days.
 end_time = datetime.datetime.utcnow()
-start_time = end_time + datetime.timedelta(days=-1)
+start_time = end_time + datetime.timedelta(days=-5)
 
 # This array will be used to store the list of available regions.
 regions = get_regions(identity)
