@@ -52,6 +52,7 @@ def get_audit_events(audit, compartment_ocids, start_time, end_time):
             compartment_id=c,
             start_time=start_time,
             end_time=end_time).data
+        print list_events_response
 
         #  Results for a compartment 'c' for a region defined
         #  in 'audit' object.
@@ -84,7 +85,8 @@ audit = oci.audit.audit_client.AuditClient(config)
 #  For each region get the logs for each compartment.
 for r in regions:
     #  Intialize with a region value.
-    audit.base_client.set_region(r)
+    #audit.base_client.set_region(r)
+    audit.base_client.set_region('us-ashburn-1')
     #  To separate results by region use print here.
     audit_events = get_audit_events(
         audit,
