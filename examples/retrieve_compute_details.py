@@ -50,6 +50,28 @@ def get_all_shapes(compute_client, compartment_ocids):
         print data
         return data
 
+def get_all_volumes(volume, compartment_ocids):
+    '''
+    Get events iteratively for each compartment defined in 'compartments_ocids'
+    for the region defined in 'compute'.
+    '''
+    for c in compartment_ocids:
+        #c='ocid1.compartment.oc1..aaaaaaaa3hg6hurigmr4bdbngby6dcjiug24f2s4p5zpqw3akafe7in5cxua'
+        get_volumes = volume.list_volumes(c)
+        data = get_volumes.data
+        while get_volumes.has_next_page:
+            get_volumes = volume.list_volumes(c, page=list_computes.next_page)
+            data.extend(list_volumes.data)
+            print 'hahahahahahahahahh'
+        print c
+        print type(c)
+        print type(data)
+        print data
+
+        #  Results for a compartment 'c' for a region defined
+        #  in 'audit' object.
+    return data
+
 def get_all_instances(compute, compartment_ocids):
     '''
     Get events iteratively for each compartment defined in 'compartments_ocids'
@@ -89,11 +111,10 @@ compartments = get_compartments(identity, tenancy_id)
 
 compute_client = oci.core.ComputeClient(config)
 shape = oci.core.models.Shape()
+block_storage_client = oci.core.BlockstorageClient(config)
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
-print get_all_instances(compute_client, compartments)
-print get_all_shapes(compute_client,compartments)
-print help(shape)
-print shape.shape('VM.Standard1.2')
-
+#print get_all_instances(compute_client, compartments)
+#print get_all_shapes(compute_client,compartments)
+print get_all_volumes(block_storage_client, compartments)
