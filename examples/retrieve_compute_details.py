@@ -60,30 +60,10 @@ def get_all_shapes(compute_client, compartment_ocids):
         while list_shapes.has_next_page:
             list_shapes = compute_client(c, page=list_shapes.next_page)
             data.extend(list_shapes.data)
-        print data
-        return data
-
-def get_all_volumes(volume, compartment_ocids):
-    '''
-    Get events iteratively for each compartment defined in 'compartments_ocids'
-    for the region defined in 'compute'.
-    '''
-    for c in compartment_ocids.id:
-        #c='ocid1.compartment.oc1..aaaaaaaa3hg6hurigmr4bdbngby6dcjiug24f2s4p5zpqw3akafe7in5cxua'
-        get_volumes = volume.list_volumes(c)
-        data = get_volumes.data
-        while get_volumes.has_next_page:
-            get_volumes = volume.list_volumes(c, page=list_computes.next_page)
-            data.extend(list_volumes.data)
-        print c
-        print type(c)
-        print type(data)
-        print data
-
-        #  Results for a compartment 'c' for a region defined
-        #  in 'audit' object.
-    return data
-
+        if len(data)!=0:
+            print type(data[0])
+        #print data
+        #return data
 class monitor_instance_per_c:
     def __init__(self):
         self.instances_count = 0
@@ -93,6 +73,58 @@ class monitor_instance_per_c:
         self.running_instances_cpu = 0
         self.running_instances_mem = 0
         self.oc = oci.identity.models.Compartment()
+
+def volume_handling(data, volume_handle):
+    #reuse monitor_instance_per_c class, so pls ignore the strange name
+    volume_handle.instances_count = len(data) #volume count:
+    for i in range(len(data)):
+        ## According to https://oracle-cloud-infrastructure-python-sdk.readthedocs.io/en/latest/api/core/models/oci.core.models.Instance.html?highlight=oci%20core%20models%20instance%20instance
+        ## Allowed values for this property are: "PROVISIONING", "RESTORING", "AVAILABLE", "TERMINATING", "TERMINATED", "FAULTY", 'UNKNOWN_ENUM_VALUE'. Any unrecognized values returned by a service will be mapped to 'UNKNOWN_ENUM_VALUE'.
+        volume_size = data[i].size_in_gbs
+        volume_handle.instances_mem += volume_size #use instance_mem to manage instance_volume
+    return(volume_handle)
+
+def get_all_volumes(volume, compartment_ocids):
+    '''
+    volume audit report'.
+    '''
+    volume_summary_report = []
+    for c_object in compartment_ocids:
+        c = c_object.id
+        #c='ocid1.compartment.oc1..aaaaaaaa3hg6hurigmr4bdbngby6dcjiug24f2s4p5zpqw3akafe7in5cxua'
+        get_volumes = volume.list_volumes(c)
+        data = get_volumes.data
+        while get_volumes.has_next_page:
+            get_volumes = volume.list_volumes(c, page=list_computes.next_page)
+            data.extend(get_volumes.data)
+
+        volume_monitor_summary = monitor_instance_per_c()
+        volume_monitor_summary.oc = c_object
+        if len(data) != 0:
+            volume_monitor_summary = volume_handling(data, volume_monitor_summary)
+        volume_summary_report.append(volume_monitor_summary)
+    volume_monitor_summary_all = monitor_instance_per_c()
+    print "================Volume Summry Report Per Comparment========================"
+    for i in range(len(volume_summary_report)):
+        volume_monitor_summary_all.instances_count += volume_summary_report[i].instances_count
+        volume_monitor_summary_all.instances_mem += volume_summary_report[i].instances_mem
+        print "***Compartment_name \t\t%s" % (volume_summary_report[i].oc.name)
+        print "***Compartment DESC \t\t%s" % (volume_summary_report[i].oc.description)
+        print "***Total volume count:\t%d" % (volume_summary_report[i].instances_count)
+        print "***Total Volume Size:\t%dGB" % (volume_summary_report[i].instances_mem)
+  
+    print "================Volume Summry Report in total========================"
+    print "***Compartment_name \t\t%s" % (volume_monitor_summary_all.oc.name)
+    print "***Compartment DESC \t\t%s" % (volume_monitor_summary_all.oc.description)
+    print "***Total volume count:\t%d" % (volume_monitor_summary_all.instances_count)
+    print "***Total Volume Size:\t%dGB" % (volume_monitor_summary_all.instances_mem)
+
+
+        #  Results for a compartment 'c' for a region defined
+        #  in 'audit' object.
+   # return data
+
+
 
 
 def instance_handling(data, instance_handle):
@@ -127,8 +159,6 @@ def get_all_instances(compute, compartment_ocids):
         while list_computes.has_next_page:
             list_computes = compute.list_instances(c, page=list_computes.next_page)
             data.extend(list_computes.data)
-        #print type(c)
-        #print type(data)
 
         instance_monitor_summary = monitor_instance_per_c()
         instance_monitor_summary.oc = c_object
@@ -192,6 +222,8 @@ block_storage_client = oci.core.BlockstorageClient(config)
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
-get_all_instances(compute_client, compartments)
+#get_all_instances(compute_client, compartments)
 #print get_all_shapes(compute_client,compartments)
-#print get_all_volumes(block_storage_client, compartments)
+get_all_volumes(block_storage_client, compartments)
+
+
