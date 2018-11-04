@@ -23,12 +23,13 @@ def get_compartments(identity, tenancy_id):
     '''
     compartment_ocids = []
     #  Store tenancy id as the first compartment
-    compartment_ocids.append(tenancy_id)
+    # compartment_ocids.append(tenancy_id)
     list_compartments_response = oci.pagination.list_call_get_all_results(
         identity.list_compartments,
         compartment_id=tenancy_id).data
     for c in list_compartments_response:
-        compartment_ocids.append(c.id)
+        ##compartment_ocids.append(c.id)
+        compartment_ocids.append(c)
     return compartment_ocids
 
 ##https://community.oracle.com/thread/4119240 
@@ -67,7 +68,7 @@ def get_all_volumes(volume, compartment_ocids):
     Get events iteratively for each compartment defined in 'compartments_ocids'
     for the region defined in 'compute'.
     '''
-    for c in compartment_ocids:
+    for c in compartment_ocids.id:
         #c='ocid1.compartment.oc1..aaaaaaaa3hg6hurigmr4bdbngby6dcjiug24f2s4p5zpqw3akafe7in5cxua'
         get_volumes = volume.list_volumes(c)
         data = get_volumes.data
@@ -91,7 +92,7 @@ class monitor_instance_per_c:
         self.instances_mem = 0
         self.running_instances_cpu = 0
         self.running_instances_mem = 0
-        self.ocid_name = "" ## will change to name in the future
+        self.oc = oci.identity.models.Compartment()
 
 
 def instance_handling(data, instance_handle):
@@ -117,8 +118,11 @@ def get_all_instances(compute, compartment_ocids):
     for the region defined in 'compute'.
     '''
     instance_summary_report = []
-    for c in compartment_ocids:
+
+    for c_object in compartment_ocids:
+        c = c_object.id
         list_computes = compute.list_instances(c)
+
         data = list_computes.data
         while list_computes.has_next_page:
             list_computes = compute.list_instances(c, page=list_computes.next_page)
@@ -127,19 +131,44 @@ def get_all_instances(compute, compartment_ocids):
         #print type(data)
 
         instance_monitor_summary = monitor_instance_per_c()
-        instance_monitor_summary.ocid_name = c
+        instance_monitor_summary.oc = c_object
         if len(data) != 0:
             instance_monitor_summary = instance_handling(data, instance_monitor_summary)
         instance_summary_report.append(instance_monitor_summary)
+    instance_monitor_summary_all = monitor_instance_per_c()
+    print "================Instance Summry Report Per Comparment========================"
     for i in range(len(instance_summary_report)):
-        print "============================================================================"
-        print "***ocid_name \t%s" % (instance_summary_report[i].ocid_name)
-        print "***Total instances count:\t%d" % (instance_summary_report[i].instances_count)
-        print "***Running instances count:\t%d" % (instance_summary_report[i].running_instances_count)
-        print "***Total instances CPU count:\t%d" % (instance_summary_report[i].instances_cpu)
-        print "***Running instances CPU count:\t%d " % (instance_summary_report[i].running_instances_cpu)
-        print "***Total instances mem count:\t%d " % (instance_summary_report[i].instances_mem)
-        print "=============================================================================="
+        instance_monitor_summary_all.instances_count += instance_summary_report[i].instances_count
+        instance_monitor_summary_all.instances_cpu += instance_summary_report[i].instances_cpu
+        instance_monitor_summary_all.instances_mem += instance_summary_report[i].instances_mem
+        instance_monitor_summary_all.running_instances_count += instance_summary_report[i].running_instances_count
+        instance_monitor_summary_all.running_instances_cpu += instance_summary_report[i].running_instances_cpu
+        instance_monitor_summary_all.running_instances_mem += instance_summary_report[i].running_instances_mem
+        
+        ##print results
+
+
+        if instance_summary_report[i].running_instances_count !=0:
+            print "***Compartment_name \t\t%s" % (instance_summary_report[i].oc.name)
+            print "***Compartment DESC \t\t%s" % (instance_summary_report[i].oc.description)
+            print "***Total instances count:\t%d" % (instance_summary_report[i].instances_count)
+            print "***Running instances count:\t%d" % (instance_summary_report[i].running_instances_count)
+            print "***Total instances CPU count:\t%d" % (instance_summary_report[i].instances_cpu)
+            print "***Total instances mem count:\t%d " % (instance_summary_report[i].instances_mem)
+            print "***Running instances CPU count:\t%d " % (instance_summary_report[i].running_instances_cpu)
+            print "***Running instances mem count:\t%d GB " % (instance_summary_report[i].running_instances_mem)
+        else:
+            print "***Compartment %s:\t 0|%d instances running" % (instance_summary_report[i].oc.name, instance_summary_report[i].instances_count)
+        print "**************************************************************************"
+
+    
+    print "================Instance Summry Report All ================================="
+    print "***Total instances count:\t%d" % (instance_monitor_summary_all.instances_count)
+    print "***Total instances CPU count:\t%d" % (instance_monitor_summary_all.instances_cpu)
+    print "***Total instances mem count:\t%d " % (instance_monitor_summary_all.instances_mem)
+    print "***Running instances count:\t%d" % (instance_monitor_summary_all.running_instances_count)
+    print "***Running instances CPU count:\t%d " % (instance_monitor_summary_all.running_instances_cpu)
+    print "***Running instances mem count:\t%d GB" % (instance_monitor_summary_all.running_instances_mem)
 
 
 #  Setting configuration
@@ -155,6 +184,7 @@ regions = get_regions(identity)
 
 # This array will be used to store the list of compartments in the tenancy.
 compartments = get_compartments(identity, tenancy_id)
+
 
 compute_client = oci.core.ComputeClient(config)
 shape = oci.core.models.Shape()
