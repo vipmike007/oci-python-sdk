@@ -1,11 +1,7 @@
+#!/usr/bin/python
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
-
-#  This script retrieves all audit logs across an Oracle Cloud Infrastructure Tenancy.
-#  for a timespan defined by start_time and end_time.
-#  This sample script retrieves Audit events for last 5 days.
-#  This script will work at a tenancy level only.
-
+# Written by: Mike Cao <mike.cao@oracle.com>
+# Version 1.0 - 04-Nov-2018
 import datetime
 import oci
 
@@ -35,19 +31,24 @@ def get_compartments(identity, tenancy_id):
         compartment_ocids.append(c.id)
     return compartment_ocids
 
-def get_MEM_by_shape(shape_name):
-    mem_list = {'vm.standard2.1':15,
-            'vm.standard2.2':30,
-            'vm.standard1.2':14,
-            'vm.standard1.4':28}
-    return mem_list[shap_name]
+##https://community.oracle.com/thread/4119240 
+###We might merge https://github.com/AnykeyNL/OCI-Python/blob/master/shapes.py in the future.
+def get_mem_by_shape(shape_name):
+   # GB
+    mem_list = {'VM.Standard1.1':7,
+            'VM.Standard2.1':15,
+            'VM.Standard2.2':30,
+            'VM.Standard1.2':14,
+            'VM.Standard1.4':28}
+    return mem_list[shape_name]
 
 def get_cpu_by_shape(shape_name):
-    cpu_list = {'vm.standard2.1':1,
-            'vm.standard2.2':2,
-            'vm.standard1.2':2,
-            'vm.standard1.4':4}
-    return cpui_list[shap_name]
+    cpu_list = {'VM.Standard1.1':1,
+            'VM.Standard2.1':1,
+            'VM.Standard2.2':2,
+            'VM.Standard1.2':2,
+            'VM.Standard1.4':4}
+    return cpu_list[shape_name]
 
 
 def get_all_shapes(compute_client, compartment_ocids):
@@ -58,7 +59,6 @@ def get_all_shapes(compute_client, compartment_ocids):
         while list_shapes.has_next_page:
             list_shapes = compute_client(c, page=list_shapes.next_page)
             data.extend(list_shapes.data)
-            print 'shap is here hahahahaha'
         print data
         return data
 
@@ -74,7 +74,6 @@ def get_all_volumes(volume, compartment_ocids):
         while get_volumes.has_next_page:
             get_volumes = volume.list_volumes(c, page=list_computes.next_page)
             data.extend(list_volumes.data)
-            print 'hahahahahahahahahh'
         print c
         print type(c)
         print type(data)
@@ -84,28 +83,63 @@ def get_all_volumes(volume, compartment_ocids):
         #  in 'audit' object.
     return data
 
+class monitor_instance_per_c:
+    def __init__(self):
+        self.instances_count = 0
+        self.running_instances_count = 0
+        self.instances_cpu = 0
+        self.instances_mem = 0
+        self.running_instances_cpu = 0
+        self.running_instances_mem = 0
+        self.ocid_name = "" ## will change to name in the future
+
+
+def instance_handling(data, instance_handle):
+    instance_handle.instances_count = len(data)
+    for i in range(len(data)):
+        instance_cpu = get_cpu_by_shape(data[i].shape)
+        instance_mem = get_mem_by_shape(data[i].shape)
+        instance_handle.instances_cpu += instance_cpu
+        instance_handle.instances_mem += instance_mem
+        ## According to https://oracle-cloud-infrastructure-python-sdk.readthedocs.io/en/latest/api/core/models/oci.core.models.Instance.html?highlight=oci%20core%20models%20instance%20instance 
+        ##Allowed values for this property are: "PROVISIONING", "RUNNING", "STARTING", "STOPPING", "STOPPED", "CREATING_IMAGE", "TERMINATING", "TERMINATED", 'UNKNOWN_ENUM_VALUE'. Any unrecognized values returned by a service will be mapped to 'UNKNOWN_ENUM_VALUE'.
+        if data[i].lifecycle_state != "STOPPED":
+            instance_handle.running_instances_cpu += instance_cpu
+            instance_handle.running_instances_mem += instance_mem
+            instance_handle.running_instances_count += 1
+
+    return(instance_handle)
+            
+
 def get_all_instances(compute, compartment_ocids):
     '''
     Get events iteratively for each compartment defined in 'compartments_ocids'
     for the region defined in 'compute'.
     '''
+    instance_summary_report = []
     for c in compartment_ocids:
-        #c='ocid1.compartment.oc1..aaaaaaaa3hg6hurigmr4bdbngby6dcjiug24f2s4p5zpqw3akafe7in5cxua'
         list_computes = compute.list_instances(c)
         data = list_computes.data
         while list_computes.has_next_page:
             list_computes = compute.list_instances(c, page=list_computes.next_page)
             data.extend(list_computes.data)
-        #print c
         #print type(c)
         #print type(data)
-        if len(data) != 0:
-            print data[1]
-            print type(data[1])
 
-        #  Results for a compartment 'c' for a region defined
-        #  in 'audit' object.
-    return data
+        instance_monitor_summary = monitor_instance_per_c()
+        instance_monitor_summary.ocid_name = c
+        if len(data) != 0:
+            instance_monitor_summary = instance_handling(data, instance_monitor_summary)
+        instance_summary_report.append(instance_monitor_summary)
+    for i in range(len(instance_summary_report)):
+        print "============================================================================"
+        print "***ocid_name \t%s" % (instance_summary_report[i].ocid_name)
+        print "***Total instances count:\t%d" % (instance_summary_report[i].instances_count)
+        print "***Running instances count:\t%d" % (instance_summary_report[i].running_instances_count)
+        print "***Total instances CPU count:\t%d" % (instance_summary_report[i].instances_cpu)
+        print "***Running instances CPU count:\t%d " % (instance_summary_report[i].running_instances_cpu)
+        print "***Total instances mem count:\t%d " % (instance_summary_report[i].instances_mem)
+        print "=============================================================================="
 
 
 #  Setting configuration
@@ -128,6 +162,6 @@ block_storage_client = oci.core.BlockstorageClient(config)
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
-print get_all_instances(compute_client, compartments)
+get_all_instances(compute_client, compartments)
 #print get_all_shapes(compute_client,compartments)
 #print get_all_volumes(block_storage_client, compartments)
