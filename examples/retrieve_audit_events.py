@@ -27,12 +27,13 @@ def get_compartments(identity, tenancy_id):
     '''
     compartment_ocids = []
     #  Store tenancy id as the first compartment
-    compartment_ocids.append(tenancy_id)
+    #compartment_ocids.append(tenancy_id)
     list_compartments_response = oci.pagination.list_call_get_all_results(
         identity.list_compartments,
         compartment_id=tenancy_id).data
     for c in list_compartments_response:
-        compartment_ocids.append(c.id)
+        #compartment_ocids.append(c.id)
+        compartment_ocids.append(c)
     return compartment_ocids
 
 
@@ -46,18 +47,26 @@ def get_audit_events(audit, compartment_ocids, start_time, end_time):
     load results.
     '''
     list_of_audit_events = []
-    for c in compartment_ocids:
+    for c_object in compartment_ocids:
+        c = c_object.id
         list_events_response = oci.pagination.list_call_get_all_results(
             audit.list_events,
             compartment_id=c,
             start_time=start_time,
             end_time=end_time).data
-        print list_events_response
-
+       # print list_events_response
+        #list_events_response = audit.list_events(
+         #       compartment_id = c,
+          #      start_time = start_time,
+           #     end_time = end_time)
         #  Results for a compartment 'c' for a region defined
         #  in 'audit' object.
-        list_of_audit_events.extend(list_events_response)
-        return list_of_audit_events
+        # list_of_audit_events.extend(list_events_response)
+        list_of_audit_events.append(list_events_response)
+    if len(list_of_audit_events) >=4:
+        print type(list_of_audit_events[3])
+        print list_of_audit_events[3]
+        #return list_of_audit_events
 
 
 #  Setting configuration
@@ -95,5 +104,5 @@ for r in regions:
         end_time)
 
     #  Results for a region 'r' for each compartment.
-    if audit_events:
-        print(audit_events)
+   # if audit_events:
+    #    print(audit_events)
