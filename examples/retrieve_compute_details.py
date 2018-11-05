@@ -104,25 +104,23 @@ def get_all_volumes(volume, compartment_ocids):
             volume_monitor_summary = volume_handling(data, volume_monitor_summary)
         volume_summary_report.append(volume_monitor_summary)
     volume_monitor_summary_all = monitor_instance_per_c()
-    print "================Volume Summry Report Per Comparment========================"
+    content = "================Volume Summry Report Per Comparment=======================\n"
     for i in range(len(volume_summary_report)):
         volume_monitor_summary_all.instances_count += volume_summary_report[i].instances_count
         volume_monitor_summary_all.instances_mem += volume_summary_report[i].instances_mem
-        print "***Compartment_name \t\t%s" % (volume_summary_report[i].oc.name)
-        print "***Compartment DESC \t\t%s" % (volume_summary_report[i].oc.description)
-        print "***Total volume count:\t%d" % (volume_summary_report[i].instances_count)
-        print "***Total Volume Size:\t%dGB" % (volume_summary_report[i].instances_mem)
+        content += "*Compartment_name \t\t%s\n" % (volume_summary_report[i].oc.name)
+        content += "*Compartment DESC \t\t%s\n" % (volume_summary_report[i].oc.description)
+        content += "*Total volume count\t\t%d\n" % (volume_summary_report[i].instances_count)
+        content += "*Total Volume Size:\t\t%dGB\n\n" % (volume_summary_report[i].instances_mem)
   
-    print "================Volume Summry Report in total========================"
-    print "***Compartment_name \t\t%s" % (volume_monitor_summary_all.oc.name)
-    print "***Compartment DESC \t\t%s" % (volume_monitor_summary_all.oc.description)
-    print "***Total volume count:\t%d" % (volume_monitor_summary_all.instances_count)
-    print "***Total Volume Size:\t%dGB" % (volume_monitor_summary_all.instances_mem)
+    content += "================Volume Summry Report in total=======================\n"
+    content += "*Total volume count\t\t%d\n" % (volume_monitor_summary_all.instances_count)
+    content += "*Total Volume Size\t\t%dGB\n" % (volume_monitor_summary_all.instances_mem)
 
 
         #  Results for a compartment 'c' for a region defined
         #  in 'audit' object.
-   # return data
+    return content
 
 
 
@@ -225,9 +223,10 @@ block_storage_client = oci.core.BlockstorageClient(config)
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
-content=get_all_instances(compute_client, compartments)
-send_report_out("Compute Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
+#content = get_all_instances(compute_client, compartments)
+#send_report_out("Compute Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
 #print get_all_shapes(compute_client,compartments)
-#get_all_volumes(block_storage_client, compartments)
+content = get_all_volumes(block_storage_client, compartments)
+send_report_out("Block Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
 
 

@@ -44,20 +44,25 @@ class audit_per_c:
         self.event_name = ""
         self.event_time = ""
 
+def send_report_out(subject, content):
+    email_client = email_notification.Email()
+    email_client.send_mail(subject, content)
+
 def audit_handling(data):
     list_audits=[]
     audit_instance = audit_per_c()
-    content = "event_time \t\t username \t\t event_name \n"
+    content = "event_time\t\tevent_name\t\t\tusername\n"
     for i in range(len(data)):
         audit_instance.compartment_name = data[i].compartment_name
         audit_instance.response_time = data[i].response_time
         audit_instance.user_name = data[i].user_name
         audit_instance.event_name = data[i].event_name
         audit_instance.event_time = data[i].event_time
-        content += "%s \t  %s\t %s \n" % (data[i].event_time.strftime("%Y-%m-%d-%H:%M:%S"),data[i].user_name,data[i].event_name)
+        content += "%s\t%s\t\t%s \n" % (data[i].event_time.strftime("%Y-%m-%d-%H:%M:%S"), data[i].event_name, data[i].user_name)
         list_audits.append(audit_instance)
-    email = email_notification.Email()
-    email.send_mail("Audit Report Events_Time"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M:%S"),content)
+    return content
+    #email = email_notification.Email()
+    #email.send_mail("Audit Report Events_Time"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M:%S"),content)
     # print content
     #return(list_audits)
 
@@ -88,8 +93,8 @@ def get_audit_events(audit, compartment_ocids, start_time, end_time):
         #  in 'audit' object.
         # list_of_audit_events.extend(list_events_response)
         list_of_audit_events.extend(list_events_response)
-    print len(list_of_audit_events)
-    audit_handling(list_of_audit_events)
+    content = audit_handling(list_of_audit_events)
+    return content
 
         
    #print type(list_of_audit_events[3])     #print list_of_audit_events[3]
@@ -130,6 +135,10 @@ audit_events = get_audit_events(
         compartments,
         start_time,
         end_time)
+
+send_report_out("Operation Audit Report - "+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),audit_events)
+
+
 
     #  Results for a region 'r' for each compartment.
    # if audit_events:
