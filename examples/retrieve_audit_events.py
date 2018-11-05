@@ -3,12 +3,12 @@
 
 #  This script retrieves all audit logs across an Oracle Cloud Infrastructure Tenancy.
 #  for a timespan defined by start_time and end_time.
-#  This sample script retrieves Audit events for last 5 days.
-#  This script will work at a tenancy level only.
+#  Last Modifed by: Mike Cao <mike.cao@oracle.com>
+#  Time : 05-Nov-2018
 
 import datetime
 import oci
-
+import email_notification
 
 def get_regions(identity):
     '''
@@ -36,6 +36,31 @@ def get_compartments(identity, tenancy_id):
         compartment_ocids.append(c)
     return compartment_ocids
 
+class audit_per_c:
+    def __init__(self):
+        self.compartment_name = ""
+        self.response_time = ""
+        self.user_name = ""
+        self.event_name = ""
+        self.event_time = ""
+
+def audit_handling(data):
+    list_audits=[]
+    audit_instance = audit_per_c()
+    content = "event_time \t\t username \t\t event_name \n"
+    for i in range(len(data)):
+        audit_instance.compartment_name = data[i].compartment_name
+        audit_instance.response_time = data[i].response_time
+        audit_instance.user_name = data[i].user_name
+        audit_instance.event_name = data[i].event_name
+        audit_instance.event_time = data[i].event_time
+        content += "%s \t  %s\t %s \n" % (data[i].event_time.strftime("%Y-%m-%d-%H:%M:%S"),data[i].user_name,data[i].event_name)
+        list_audits.append(audit_instance)
+    email = email_notification.Email()
+    email.send_mail("Audit Report Events_Time"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M:%S"),content)
+    # print content
+    #return(list_audits)
+
 
 def get_audit_events(audit, compartment_ocids, start_time, end_time):
     '''
@@ -62,10 +87,12 @@ def get_audit_events(audit, compartment_ocids, start_time, end_time):
         #  Results for a compartment 'c' for a region defined
         #  in 'audit' object.
         # list_of_audit_events.extend(list_events_response)
-        list_of_audit_events.append(list_events_response)
-    if len(list_of_audit_events) >=4:
-        print type(list_of_audit_events[3])
-        print list_of_audit_events[3]
+        list_of_audit_events.extend(list_events_response)
+    print len(list_of_audit_events)
+    audit_handling(list_of_audit_events)
+
+        
+   #print type(list_of_audit_events[3])     #print list_of_audit_events[3]
         #return list_of_audit_events
 
 
@@ -81,7 +108,8 @@ identity = oci.identity.IdentityClient(config)
 #  ListEvents expects timestamps into RFC3339 format.
 #  For the purposes of sample script, logs of last 1 days.
 end_time = datetime.datetime.utcnow()
-start_time = end_time + datetime.timedelta(days=-1)
+#start_time = end_time + datetime.timedelta(days=-1)
+start_time = end_time + datetime.timedelta(hours=-4)
 
 # This array will be used to store the list of available regions.
 regions = get_regions(identity)
@@ -92,12 +120,12 @@ compartments = get_compartments(identity, tenancy_id)
 audit = oci.audit.audit_client.AuditClient(config)
 
 #  For each region get the logs for each compartment.
-for r in regions:
+#for r in regions:
     #  Intialize with a region value.
     #audit.base_client.set_region(r)
-    audit.base_client.set_region('us-ashburn-1')
-    #  To separate results by region use print here.
-    audit_events = get_audit_events(
+audit.base_client.set_region('us-ashburn-1')
+#  To separate results by region use print here.
+audit_events = get_audit_events(
         audit,
         compartments,
         start_time,

@@ -4,7 +4,7 @@
 # Version 1.0 - 04-Nov-2018
 import datetime
 import oci
-
+import email_notification
 
 def get_regions(identity):
     '''
@@ -142,7 +142,10 @@ def instance_handling(data, instance_handle):
             instance_handle.running_instances_count += 1
 
     return(instance_handle)
-            
+
+def send_report_out(subject, content):
+    email_client = email_notification.Email()
+    email_client.send_mail(subject, content)
 
 def get_all_instances(compute, compartment_ocids):
     '''
@@ -166,7 +169,8 @@ def get_all_instances(compute, compartment_ocids):
             instance_monitor_summary = instance_handling(data, instance_monitor_summary)
         instance_summary_report.append(instance_monitor_summary)
     instance_monitor_summary_all = monitor_instance_per_c()
-    print "================Instance Summry Report Per Comparment========================"
+    content = ""
+    content += "================Instance Summry Report Per Comparment========================\n"
     for i in range(len(instance_summary_report)):
         instance_monitor_summary_all.instances_count += instance_summary_report[i].instances_count
         instance_monitor_summary_all.instances_cpu += instance_summary_report[i].instances_cpu
@@ -176,29 +180,28 @@ def get_all_instances(compute, compartment_ocids):
         instance_monitor_summary_all.running_instances_mem += instance_summary_report[i].running_instances_mem
         
         ##print results
-
-
         if instance_summary_report[i].running_instances_count !=0:
-            print "***Compartment_name \t\t%s" % (instance_summary_report[i].oc.name)
-            print "***Compartment DESC \t\t%s" % (instance_summary_report[i].oc.description)
-            print "***Total instances count:\t%d" % (instance_summary_report[i].instances_count)
-            print "***Running instances count:\t%d" % (instance_summary_report[i].running_instances_count)
-            print "***Total instances CPU count:\t%d" % (instance_summary_report[i].instances_cpu)
-            print "***Total instances mem count:\t%d " % (instance_summary_report[i].instances_mem)
-            print "***Running instances CPU count:\t%d " % (instance_summary_report[i].running_instances_cpu)
-            print "***Running instances mem count:\t%d GB " % (instance_summary_report[i].running_instances_mem)
+            content += "*Compartment_name \t\t%s\n" % (instance_summary_report[i].oc.name)
+            content += "*Compartment DESC \t\t%s\n" % (instance_summary_report[i].oc.description)
+            content += "*Total instances count:\t\t%d\n" % (instance_summary_report[i].instances_count)
+            content += "*Running instances count:\t%d\n" % (instance_summary_report[i].running_instances_count)
+            content += "*Total instances CPU count:\t%d\n" % (instance_summary_report[i].instances_cpu)
+            content += "*Total instances mem count:\t%d\n" % (instance_summary_report[i].instances_mem)
+            content += "*Running instances CPU count:\t%d\n" % (instance_summary_report[i].running_instances_cpu)
+            content += "*Running instances mem count:\t%d GB \n\n" % (instance_summary_report[i].running_instances_mem)
         else:
-            print "***Compartment %s:\t 0|%d instances running" % (instance_summary_report[i].oc.name, instance_summary_report[i].instances_count)
-        print "**************************************************************************"
+            content += "*Compartment %s:\t 0|%d instances running\n\n" % (instance_summary_report[i].oc.name, instance_summary_report[i].instances_count)
+        content += "**************************************************************************\n"
 
     
-    print "================Instance Summry Report All ================================="
-    print "***Total instances count:\t%d" % (instance_monitor_summary_all.instances_count)
-    print "***Total instances CPU count:\t%d" % (instance_monitor_summary_all.instances_cpu)
-    print "***Total instances mem count:\t%d " % (instance_monitor_summary_all.instances_mem)
-    print "***Running instances count:\t%d" % (instance_monitor_summary_all.running_instances_count)
-    print "***Running instances CPU count:\t%d " % (instance_monitor_summary_all.running_instances_cpu)
-    print "***Running instances mem count:\t%d GB" % (instance_monitor_summary_all.running_instances_mem)
+    content += "================Instance Summry Report All =================================\n"
+    content += "*Total instances count:\t%d\n" % (instance_monitor_summary_all.instances_count)
+    content += "*Total instances CPU count:\t%d\n" % (instance_monitor_summary_all.instances_cpu)
+    content += "*Total instances mem count:\t%d\n" % (instance_monitor_summary_all.instances_mem)
+    content += "*Running instances count:\t%d\n"% (instance_monitor_summary_all.running_instances_count)
+    content += "*Running instances CPU count:\t%d\n" % (instance_monitor_summary_all.running_instances_cpu)
+    content += "*Running instances mem count:\t%d GB\n" % (instance_monitor_summary_all.running_instances_mem)
+    return content
 
 
 #  Setting configuration
@@ -222,8 +225,9 @@ block_storage_client = oci.core.BlockstorageClient(config)
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
-#get_all_instances(compute_client, compartments)
+content=get_all_instances(compute_client, compartments)
+send_report_out("Compute Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
 #print get_all_shapes(compute_client,compartments)
-get_all_volumes(block_storage_client, compartments)
+#get_all_volumes(block_storage_client, compartments)
 
 
