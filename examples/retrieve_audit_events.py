@@ -30,10 +30,12 @@ def get_compartments(identity, tenancy_id):
     #compartment_ocids.append(tenancy_id)
     list_compartments_response = oci.pagination.list_call_get_all_results(
         identity.list_compartments,
-        compartment_id=tenancy_id).data
+        compartment_id=tenancy_id,
+        compartment_id_in_subtree=True).data
     for c in list_compartments_response:
         #compartment_ocids.append(c.id)
-        compartment_ocids.append(c)
+        if c.lifecycle_state == "ACTIVE":
+            compartment_ocids.append(c)
     return compartment_ocids
 
 class audit_per_c:
@@ -122,6 +124,8 @@ regions = get_regions(identity)
 # This array will be used to store the list of compartments in the tenancy.
 compartments = get_compartments(identity, tenancy_id)
 
+for i in range(len(compartments)):
+    print compartments[i].name
 audit = oci.audit.audit_client.AuditClient(config)
 
 #  For each region get the logs for each compartment.
