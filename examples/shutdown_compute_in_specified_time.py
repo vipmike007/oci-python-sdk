@@ -28,7 +28,6 @@ def get_compartments(identity, tenancy_id, compartment_ocids,name):
         compartment_id=tenancy_id).data
     for c in list_compartments_response:
         if c.lifecycle_state == "ACTIVE":
-            print c.name
             compartment_ocids.append(c)
             get_compartments(identity, c.id, compartment_ocids,c.name)
     return compartment_ocids
@@ -38,12 +37,13 @@ def send_report_out(subject, content):
     email_client = email_notification.Email()
     email_client.send_mail(subject, content)
 
-def stop_all_instances(compute, compartment_ocids):
+def stop_all_instances(compute, compartment_ocids, region):
     '''
     Get events iteratively for each compartment defined in 'compartments_ocids'
     for the region defined in 'compute'.
     '''
     data = ""
+    shutdown_list = []
 
     for c_object in compartment_ocids:
         c = c_object.id
@@ -57,29 +57,30 @@ def stop_all_instances(compute, compartment_ocids):
         #data is the list if the computes.
         for i in range(len(data)):
             if data[i].lifecycle_state == "RUNNING":
+                shutdown_list.append(data[i].display_name)
                 instance = compute.instance_action(data[i].id, "STOP").data # this will return instance Class
                 oci.wait_until(compute,compute_client.get_instance(instance.id),'lifecycle_state','STOPPED',succeed_on_not_found=True)
-                print instance.display_name + "is stopped"
-                data += "%s is stopped by agent as it should be up now" % instance.display_name
-                
-    return data
+                #print instance.display_name + "is stopped"
+                #reply += "%s is stopped by agent as it should be up now" % instance.display_name
+            
+    return shutdown_list
 
-def is_apac():
-    current_hour = datetime.datetime.utcnow().hour
+def is_apac(current_time):
+    current_hour = current_time.hour
     if current_hour >=0 and current_hour <= 13:
         return True
     else:
         return False
 
-def is_emea():
-    current_hour = datetime.datetime.utcnow().hour
-    if current_hour >=8 and current_hour <= 17:
+def is_emea(current_time):
+    current_hour = current_time.hour
+    if current_hour >=10 and current_hour <= 17:
         return True
     else: 
         return False
 
-def is_amer():
-    current_hour = datetime.datetime.utcnow().hour
+def is_amer(current_time):
+    current_hour = current_time.hour
     if (current_hour >=0 and current_hour <= 1) or (current_hour >= 16 and current_hour < 24):
         return True
     else:
@@ -98,37 +99,50 @@ identity = oci.identity.IdentityClient(config)
 #regions = get_regions(identity)
 
 compute_client = oci.core.ComputeClient(config)
+shutdown_list = 0
+# time
+time_now = datetime.datetime.utcnow()
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
-
-if not is_apac():
-    print "apac VM shutdown ..."
+output = "Following VMs are still in running status outside working hours!\n"
+if not is_apac(time_now):
     root_compartment_id = config["apac_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list,"apac")
+    compartments = get_compartments(identity, root_compartment_id, compartments_list)
     status = stop_all_instances(compute_client, compartments)
-    print status
+    if len(status) != 0:
+        shutdown_list += len(status)
+        for i in range(len(status)):
+            output += "APAC \t\t\t %s" % (status[i])
     
 
-if not is_emea():
-    print "emea vm shutdown..."
+if not is_emea(time_now):
     root_compartment_id = config["emea_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list,"emea")
-    status = stop_all_instances(compute_client, compartments)
-    print status
+    compartments = get_compartments(identity, root_compartment_id, compartments_list)
+    status = stop_all_instances(compute_client, compartments, "EMEA")
+    if len(status) != 0:
+        shutdown_list += len(status)
+        for i in range(len(status)):
+            output += "EMEA \t\t\t %s" % (status[i])
 
-if not is_amer():
-    print "amer vm shutdown..."
+
+if not is_amer(time_now):
     root_compartment_id = config["amer_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list,"amer")
-    status = stop_all_instances(compute_client, compartments)
-    print status
+    compartments = get_compartments(identity, root_compartment_id, compartments_list)
+    status = stop_all_instances(compute_client, compartments, "AMER")
+    if len(status) != 0:
+        shutdown_list += len(status)
+        for i in range(len(status)):
+            output += "AMER \t\t\t %s" % (status[i])
+
+if shutdown_list !=0:
+    send_report_out("Compute shutdown Report -"+ current_time.strftime("%Y-%m-%d-%H:%M"),output)
 
 
 
