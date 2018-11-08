@@ -101,12 +101,12 @@ identity = oci.identity.IdentityClient(config)
 compute_client = oci.core.ComputeClient(config)
 shutdown_list = 0
 # time
-time_now = datetime.datetime.utcnow()
+current_time = datetime.datetime.utcnow()
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
 output = "Following VMs are still in running status outside working hours!\n"
-if not is_apac(time_now):
+if not is_apac(current_time):
     root_compartment_id = config["apac_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
@@ -118,7 +118,7 @@ if not is_apac(time_now):
             output += "APAC \t\t\t %s" % (status[i])
     
 
-if not is_emea(time_now):
+if not is_emea(current_time):
     root_compartment_id = config["emea_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
@@ -130,7 +130,7 @@ if not is_emea(time_now):
             output += "EMEA \t\t\t %s" % (status[i])
 
 
-if not is_amer(time_now):
+if not is_amer(current_time):
     root_compartment_id = config["amer_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
@@ -142,7 +142,7 @@ if not is_amer(time_now):
             output += "AMER \t\t\t %s" % (status[i])
 
 if shutdown_list !=0:
-    send_report_out("Compute shutdown Report -"+ current_time.strftime("%Y-%m-%d-%H:%M"),output)
+    send_report_out("Compute shutdown Report - "+ current_time.strftime("%Y-%m-%d-%H:%M"),output)
 
 
 
