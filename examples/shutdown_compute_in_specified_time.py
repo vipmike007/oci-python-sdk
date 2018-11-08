@@ -122,7 +122,7 @@ if not is_emea(time_now):
     root_compartment_id = config["emea_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, "EMEA")
+    compartments = get_compartments(identity, root_compartment_id, compartments_list, "EMEA")
     status = stop_all_instances(compute_client, compartments)
     if len(status) != 0:
         shutdown_list += len(status)
