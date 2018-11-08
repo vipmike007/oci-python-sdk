@@ -17,7 +17,7 @@ def get_regions(identity):
     return list_of_regions
 
 ## Good thing is we support hirachy mode so code need to be changed.and we only check the status of 
-def get_compartments(identity, tenancy_id, compartment_ocids,name):
+def get_compartments(identity, tenancy_id, compartment_ocids, name):
     '''
     Retrieve the list of compartments under the tenancy.
     '''
@@ -37,7 +37,7 @@ def send_report_out(subject, content):
     email_client = email_notification.Email()
     email_client.send_mail(subject, content)
 
-def stop_all_instances(compute, compartment_ocids, region):
+def stop_all_instances(compute, compartment_ocids):
     '''
     Get events iteratively for each compartment defined in 'compartments_ocids'
     for the region defined in 'compute'.
@@ -110,7 +110,7 @@ if not is_apac(time_now):
     root_compartment_id = config["apac_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list)
+    compartments = get_compartments(identity, root_compartment_id, compartments_list,"APAC")
     status = stop_all_instances(compute_client, compartments)
     if len(status) != 0:
         shutdown_list += len(status)
@@ -122,8 +122,8 @@ if not is_emea(time_now):
     root_compartment_id = config["emea_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list)
-    status = stop_all_instances(compute_client, compartments, "EMEA")
+    compartments = get_compartments(identity, root_compartment_id, "EMEA")
+    status = stop_all_instances(compute_client, compartments)
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
@@ -134,8 +134,8 @@ if not is_amer(time_now):
     root_compartment_id = config["amer_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list)
-    status = stop_all_instances(compute_client, compartments, "AMER")
+    compartments = get_compartments(identity, root_compartment_id, compartments_list,"AMER")
+    status = stop_all_instances(compute_client, compartments)
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
