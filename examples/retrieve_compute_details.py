@@ -26,10 +26,12 @@ def get_compartments(identity, tenancy_id):
     # compartment_ocids.append(tenancy_id)
     list_compartments_response = oci.pagination.list_call_get_all_results(
         identity.list_compartments,
-        compartment_id=tenancy_id).data
+        compartment_id=tenancy_id,
+        compartment_id_in_subtree=True).data
     for c in list_compartments_response:
         ##compartment_ocids.append(c.id)
-        compartment_ocids.append(c)
+        if c.lifecycle_state == "ACTIVE":
+            compartment_ocids.append(c)
     return compartment_ocids
 
 ##https://community.oracle.com/thread/4119240 
@@ -80,8 +82,9 @@ def volume_handling(data, volume_handle):
     for i in range(len(data)):
         ## According to https://oracle-cloud-infrastructure-python-sdk.readthedocs.io/en/latest/api/core/models/oci.core.models.Instance.html?highlight=oci%20core%20models%20instance%20instance
         ## Allowed values for this property are: "PROVISIONING", "RESTORING", "AVAILABLE", "TERMINATING", "TERMINATED", "FAULTY", 'UNKNOWN_ENUM_VALUE'. Any unrecognized values returned by a service will be mapped to 'UNKNOWN_ENUM_VALUE'.
-        volume_size = data[i].size_in_gbs
-        volume_handle.instances_mem += volume_size #use instance_mem to manage instance_volume
+        if data[i].lifecycle_state != 'TERMINATED' and data[i].lifecycle_state!= 'TERMINATING':
+            volume_size = data[i].size_in_gbs
+            volume_handle.instances_mem += volume_size #use instance_mem to manage instance_volume
     return(volume_handle)
 
 def get_all_volumes(volume, compartment_ocids):
@@ -126,18 +129,20 @@ def get_all_volumes(volume, compartment_ocids):
 
 
 def instance_handling(data, instance_handle):
-    instance_handle.instances_count = len(data)
+    instance_handle.instances_count = 0
     for i in range(len(data)):
-        instance_cpu = get_cpu_by_shape(data[i].shape)
-        instance_mem = get_mem_by_shape(data[i].shape)
-        instance_handle.instances_cpu += instance_cpu
-        instance_handle.instances_mem += instance_mem
+        if (data[i].lifecycle_state != "TERMINATED" and data[i].lifecycle_state != "TERMINATING"):
+            instance_cpu = get_cpu_by_shape(data[i].shape)
+            instance_mem = get_mem_by_shape(data[i].shape)
+            instance_handle.instances_cpu += instance_cpu
+            instance_handle.instances_mem += instance_mem
+            instance_handle.instances_count += 1
         ## According to https://oracle-cloud-infrastructure-python-sdk.readthedocs.io/en/latest/api/core/models/oci.core.models.Instance.html?highlight=oci%20core%20models%20instance%20instance 
         ##Allowed values for this property are: "PROVISIONING", "RUNNING", "STARTING", "STOPPING", "STOPPED", "CREATING_IMAGE", "TERMINATING", "TERMINATED", 'UNKNOWN_ENUM_VALUE'. Any unrecognized values returned by a service will be mapped to 'UNKNOWN_ENUM_VALUE'.
-        if data[i].lifecycle_state != "STOPPED":
-            instance_handle.running_instances_cpu += instance_cpu
-            instance_handle.running_instances_mem += instance_mem
-            instance_handle.running_instances_count += 1
+            if data[i].lifecycle_state != "STOPPED":
+                instance_handle.running_instances_cpu += instance_cpu
+                instance_handle.running_instances_mem += instance_mem
+                instance_handle.running_instances_count += 1
 
     return(instance_handle)
 
@@ -223,8 +228,8 @@ block_storage_client = oci.core.BlockstorageClient(config)
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
-#content = get_all_instances(compute_client, compartments)
-#send_report_out("Compute Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
+content = get_all_instances(compute_client, compartments)
+send_report_out("Compute Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
 #print get_all_shapes(compute_client,compartments)
 content = get_all_volumes(block_storage_client, compartments)
 send_report_out("Block Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
