@@ -45,6 +45,7 @@ class audit_per_c:
         self.user_name = ""
         self.event_name = ""
         self.event_time = ""
+        self.event_request_action = ""
 
 def send_report_out(subject, content):
     email_client = email_notification.Email()
@@ -53,15 +54,18 @@ def send_report_out(subject, content):
 def audit_handling(data):
     list_audits=[]
     audit_instance = audit_per_c()
-    content = "event_time\t\tevent_name\t\t\tusername\n"
+    content = "event_time\t\tevent_name\t\ttype\tusername\n"
     for i in range(len(data)):
-        audit_instance.compartment_name = data[i].compartment_name
-        audit_instance.response_time = data[i].response_time
-        audit_instance.user_name = data[i].user_name
-        audit_instance.event_name = data[i].event_name
-        audit_instance.event_time = data[i].event_time
-        content += "%s\t%s\t\t%s \n" % (data[i].event_time.strftime("%Y-%m-%d-%H:%M:%S"), data[i].event_name, data[i].user_name)
-        list_audits.append(audit_instance)
+        if data[i].request_action != "GET":
+            audit_instance.compartment_name = data[i].compartment_name
+            audit_instance.response_time = data[i].response_time
+            audit_instance.user_name = data[i].user_name
+            audit_instance.event_name = data[i].event_name
+            audit_instance.event_time = data[i].event_time
+            audit_instance.request_action = data[i].request_action
+            #print data[i].request_action
+            content += "%s\t%s\t\t%s\t%s \n" % (data[i].event_time.strftime("%Y-%m-%d-%H:%M:%S"), data[i].event_name,  data[i].request_action, data[i].user_name)
+            list_audits.append(audit_instance)
     return content
     #email = email_notification.Email()
     #email.send_mail("Audit Report Events_Time"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M:%S"),content)
@@ -97,6 +101,7 @@ def get_audit_events(audit, compartment_ocids, start_time, end_time):
         list_of_audit_events.extend(list_events_response)
     content = audit_handling(list_of_audit_events)
     return content
+    #return str(list_of_audit_events)
 
         
    #print type(list_of_audit_events[3])     #print list_of_audit_events[3]
@@ -116,7 +121,7 @@ identity = oci.identity.IdentityClient(config)
 #  For the purposes of sample script, logs of last 1 days.
 end_time = datetime.datetime.utcnow()
 #start_time = end_time + datetime.timedelta(days=-1)
-start_time = end_time + datetime.timedelta(hours=-4)
+start_time = end_time + datetime.timedelta(hours=-12)
 
 # This array will be used to store the list of available regions.
 regions = get_regions(identity)

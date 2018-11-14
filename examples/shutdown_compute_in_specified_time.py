@@ -67,21 +67,21 @@ def stop_all_instances(compute, compartment_ocids):
 
 def is_apac(current_time):
     current_hour = current_time.hour
-    if current_hour >=0 and current_hour <= 13:
+    if current_hour >=0 and current_hour < 13:
         return True
     else:
         return False
 
 def is_emea(current_time):
     current_hour = current_time.hour
-    if current_hour >=10 and current_hour <= 17:
+    if current_hour >=10 and current_hour < 17:
         return True
     else: 
         return False
 
 def is_amer(current_time):
     current_hour = current_time.hour
-    if (current_hour >=0 and current_hour <= 1) or (current_hour >= 16 and current_hour < 24):
+    if (current_hour >=0 and current_hour < 1) or (current_hour >= 16 and current_hour < 24):
         return True
     else:
         return False
@@ -127,7 +127,7 @@ if not is_emea(current_time):
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
-            output += "EMEA \t\t\t %s" % (status[i])
+            output += "EMEA \t\t\t %s\n" % (status[i])
 
 
 if not is_amer(current_time):
@@ -139,9 +139,10 @@ if not is_amer(current_time):
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
-            output += "AMER \t\t\t %s" % (status[i])
+            output += "AMER \t\t\t %s\n" % (status[i])
 
 if shutdown_list !=0:
+    print output
     send_report_out("Compute shutdown Report - "+ current_time.strftime("%Y-%m-%d-%H:%M"),output)
 
 
