@@ -5,6 +5,7 @@
 import datetime
 import oci
 import email_notification
+import sys
 
 def get_regions(identity):
     '''
@@ -126,8 +127,6 @@ def get_all_volumes(volume, compartment_ocids):
     return content
 
 
-
-
 def instance_handling(data, instance_handle):
     instance_handle.instances_count = 0
     for i in range(len(data)):
@@ -206,10 +205,53 @@ def get_all_instances(compute, compartment_ocids):
     content += "*Running instances mem count:\t%d GB\n" % (instance_monitor_summary_all.running_instances_mem)
     return content
 
+def get_all_db_system(dbs, compartment_ocids):
+    list_of_db_systems = []
+    for c_object in compartment_ocids:
+        c = c_object.id
+        db_lists = oci.pagination.list_call_get_all_results(
+            dbs.list_db_systems,
+            compartment_id=c).data
+        list_of_db_systems.extend(db_lists)
+    content = ""
+    count = 0
+    size = 0
+    cpu = 0
+    special_monitoring = ""
+    content += "================DB Summry Report Per Comparment========================\n"
+    for i in list_of_db_systems:
+        if i.lifecycle_state == "AVAILABLE" or i.lifecycle_state == "PROVISIONING":
+            count += 1
+            size += i.data_storage_size_in_gbs
+            cpu += get_cpu_by_shape(i.shape)
+            if i.database_edition != "STANDARD_EDITION":
+                special_monitoring += "DB %s are using %s DB\n" %(i.display_name,i.database_edition)
+    content += "*Total DB count is %d \n" %(count)
+    content += "*Total DB cpu is %d \n" %(cpu)
+    content += "*Total DB extra storage size is %d \n" % (size)
+    content += special_monitoring
+
+        
+            
+    
+#    content = instance_handling(list_of_db_systems)
+    return content
+
+
 
 #  Setting configuration
 #  Default path for configuration file is "~/.oci/config"
-config = oci.config.from_file()
+#config = oci.config.from_file()
+if len(sys.argv) == 1:
+    config = oci.config.from_file(file_location='~/.oci/config', profile_name = "DEFAULT")
+    tenancy_name = "default"
+elif len(sys.argv) == 2:
+    config = oci.config.from_file(file_location='~/.oci/config', profile_name = sys.argv[1])
+    tenancy_name = sys.argv[1]
+else:
+    print 'print error found'
+    sys.exit(1)
+
 tenancy_id = config["tenancy"]
 
 #  Initiate the client with the locally available config.
@@ -225,13 +267,16 @@ compartments = get_compartments(identity, tenancy_id)
 compute_client = oci.core.ComputeClient(config)
 shape = oci.core.models.Shape()
 block_storage_client = oci.core.BlockstorageClient(config)
+db_client = oci.database.DatabaseClient(config)
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
-content = get_all_instances(compute_client, compartments)
-send_report_out("Compute Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
+instance_content = get_all_instances(compute_client, compartments)
+#send_report_out("Compute Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
 #print get_all_shapes(compute_client,compartments)
-content = get_all_volumes(block_storage_client, compartments)
-send_report_out("Block Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
-
-
+volume_content = get_all_volumes(block_storage_client, compartments)
+#send_report_out("Block Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
+db_client.base_client.set_region('us-ashburn-1')
+db_content = get_all_db_system(db_client,compartments)
+content = instance_content + volume_content + db_content
+send_report_out("tenancy - " + tenancy_name + "-"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)

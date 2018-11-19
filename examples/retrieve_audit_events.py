@@ -9,6 +9,7 @@
 import datetime
 import oci
 import email_notification
+import sys
 
 def get_regions(identity):
     '''
@@ -110,7 +111,14 @@ def get_audit_events(audit, compartment_ocids, start_time, end_time):
 
 #  Setting configuration
 #  Default path for configuration file is "~/.oci/config"
-config = oci.config.from_file()
+#config = oci.config.from_file()
+if len(sys.argv) == 1:
+    config = oci.config.from_file(file_location='~/.oci/config', profile_name = "DEFAULT")
+elif len(sys.argv) == 2:
+    config = oci.config.from_file(file_location='~/.oci/config', profile_name = sys.argv[1])
+else:
+    print 'print error found'
+    sys.exit(1)
 tenancy_id = config["tenancy"]
 
 #  Initiate the client with the locally available config.

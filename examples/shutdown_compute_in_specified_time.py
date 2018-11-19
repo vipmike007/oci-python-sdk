@@ -5,6 +5,7 @@
 import datetime
 import oci
 import email_notification
+import sys
 
 def get_regions(identity):
     '''
@@ -37,6 +38,30 @@ def send_report_out(subject, content):
     email_client = email_notification.Email()
     email_client.send_mail(subject, content)
 
+def stop_all_DB(DBClient, compartment_ocids):
+    data = ""
+    shutdown_list = []
+    for c_object in compartment_ocids:
+        c = c_object.id
+        DB_instances = DBClient.list_db_systems(c)
+
+        data = DB_instances.data
+        while DB_instances.has_next_page:
+            DB_instances = DBClient.list_db_systems(c, page=DB_instances.next_page)
+            data.extend(DB_instances.data)
+        print " stoppping DB"
+        #data is the list if the computes.
+        for i in range(len(data)):
+            if data[i].lifecycle_state == "AVAILABLE" or data[i].lifecycle_state == "PROVISIONING":
+                shutdown_list.append(data[i].display_name)
+                #instance = DBClient.db_node_action(data[i].id, "STOP").data # this will return instance Class
+                instance = DBClient.terminate_db_system(data[i].id)
+                oci.wait_until(DBClient,DBClient.get_db_system(data[i].id),'lifecycle_state','TERMINATED',succeed_on_not_found=True)
+                #print instance.display_name + "is stopped"
+                #reply += "%s is stopped by agent as it should be up now" % instance.display_name
+
+    return shutdown_list
+
 def stop_all_instances(compute, compartment_ocids):
     '''
     Get events iteratively for each compartment defined in 'compartments_ocids'
@@ -53,7 +78,7 @@ def stop_all_instances(compute, compartment_ocids):
         while compute_instances.has_next_page:
             compute_instances = compute.list_instances(c, page=compute_instances.next_page)
             data.extend(compute_instances.data)
-
+ 
         #data is the list if the computes.
         for i in range(len(data)):
             if data[i].lifecycle_state == "RUNNING":
@@ -89,7 +114,13 @@ def is_amer(current_time):
 
 #  Setting configuration
 #  Default path for configuration file is "~/.oci/config"
-config = oci.config.from_file(file_location='~/.oci/config', profile_name = "DEFAULT")
+if len(sys.argv) == 1:
+    config = oci.config.from_file(file_location='~/.oci/config', profile_name = "DEFAULT")
+elif len(sys.argv) == 2:
+    config = oci.config.from_file(file_location='~/.oci/config', profile_name = sys.argv[1])
+else:
+    print 'print error found'
+    sys.exit(1)
 tenancy_id = config["tenancy"]
 
 
@@ -102,40 +133,55 @@ compute_client = oci.core.ComputeClient(config)
 shutdown_list = 0
 # time
 current_time = datetime.datetime.utcnow()
+current_hour = current_time.hour
+DB_client = oci.database.DatabaseClient(config)
 
 #  For each region get the logs for each compartment.
 compute_client.base_client.set_region('us-ashburn-1')
 output = "Following VMs are still in running status outside working hours!\n"
-if not is_apac(current_time):
+apac_shift_hours = eval(config["apac_shift_hours"])
+emea_shift_hours = eval(config["emea_shift_hours"])
+amer_shift_hours = eval(config["amer_shift_hours"])
+#print type(amer_shift_hours)
+#print amer_shift_hours
+#print not 22 in amer_shift_hours
+if not current_hour in apac_shift_hours:
     root_compartment_id = config["apac_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
     compartments = get_compartments(identity, root_compartment_id, compartments_list,"APAC")
     status = stop_all_instances(compute_client, compartments)
+    status.extend(stop_all_DB(DB_client, compartments))
+
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
             output += "APAC \t\t\t %s" % (status[i])
     
 
-if not is_emea(current_time):
+#if not is_emea(current_time):
+if not current_hour in emea_shift_hours:
     root_compartment_id = config["emea_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
     compartments = get_compartments(identity, root_compartment_id, compartments_list, "EMEA")
     status = stop_all_instances(compute_client, compartments)
+    status.extend(stop_all_DB(DB_client, compartments))
+
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
             output += "EMEA \t\t\t %s\n" % (status[i])
 
 
-if not is_amer(current_time):
+#if not is_amer(current_time):
+if not current_hour in amer_shift_hours:
     root_compartment_id = config["amer_root_compartment"]
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_compartment_id).data)
     compartments = get_compartments(identity, root_compartment_id, compartments_list,"AMER")
     status = stop_all_instances(compute_client, compartments)
+    status.extend(stop_all_DB(DB_client, compartments))
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
@@ -144,9 +190,4 @@ if not is_amer(current_time):
 if shutdown_list !=0:
     print output
     send_report_out("Compute shutdown Report - "+ current_time.strftime("%Y-%m-%d-%H:%M"),output)
-
-
-
-
-
 
