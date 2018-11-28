@@ -145,8 +145,10 @@ def instance_handling(data, instance_handle):
 
     return(instance_handle)
 
-def send_report_out(subject, content):
+def send_report_out(subject, content, to_list, cc_list):
     email_client = email_notification.Email()
+    email_client.mailto_list = to_list
+    email_client.mailcc_list = cc_list
     email_client.send_mail(subject, content)
 
 def get_all_instances(compute, compartment_ocids):
@@ -279,4 +281,6 @@ volume_content = get_all_volumes(block_storage_client, compartments)
 db_client.base_client.set_region('us-ashburn-1')
 db_content = get_all_db_system(db_client,compartments)
 content = instance_content + volume_content + db_content
-send_report_out("tenancy - " + tenancy_name + "-"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
+to_list=(str(config["to_list"])).split(',')
+cc_list=(str(config["cc_list"])).split(',')
+send_report_out("tenancy - " + tenancy_name + "-"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content,to_list,cc_list)

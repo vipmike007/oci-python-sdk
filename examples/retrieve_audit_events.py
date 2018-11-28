@@ -48,8 +48,10 @@ class audit_per_c:
         self.event_time = ""
         self.event_request_action = ""
 
-def send_report_out(subject, content):
+def send_report_out(subject, content, to_list, cc_list):
     email_client = email_notification.Email()
+    email_client.mailto_list = to_list
+    email_client.mailcc_list = cc_list
     email_client.send_mail(subject, content)
 
 def audit_handling(data):
@@ -152,8 +154,9 @@ audit_events = get_audit_events(
         compartments,
         start_time,
         end_time)
-
-send_report_out("Operation Audit Report - "+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),audit_events)
+to_list=(str(config["to_list"])).split(',')
+cc_list=(str(config["cc_list"])).split(',')
+send_report_out("Operation Audit Report - "+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),audit_events,to_list,cc_list)
 
 
 

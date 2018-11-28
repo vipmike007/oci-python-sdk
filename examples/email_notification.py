@@ -12,6 +12,7 @@ class Email:
         config = oci.config.from_file()
         self.mail_pass = config["email_password"]
         self.mail_postfix="gmail.com.com"
+        self.mailcc_list=[]
 ######################
     def send_mail(self,sub,content):
         '''
@@ -21,11 +22,15 @@ class Email:
         send_mail("aaa@gmail.com","sub","content")
         '''
         to_list = self.mailto_list
+        cc_list = self.mailcc_list
         me = "Mike Cao <mike.cao@oracle.com>"
         msg = MIMEText(content)
         msg['Subject'] = sub
         msg['From'] = me
-        msg['To'] = ";".join(to_list)
+        if len(to_list) !=0 :
+            msg['To'] = ";".join(to_list)
+        if len(cc_list) !=0:
+            msg['Cc'] = ";".join(cc_list)
         try:
             s = smtplib.SMTP("smtp.gmail.com", 587)
             #s.set_debuglevel(1)
@@ -34,6 +39,7 @@ class Email:
             #s.connect(self.mail_host)
             s.login(self.mail_user,self.mail_pass)
             s.sendmail(me, to_list, msg.as_string())
+            #s.sendmail(me, msg.as_string())
             s.close()
             return True
         except Exception, e:
