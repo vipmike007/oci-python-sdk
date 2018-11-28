@@ -49,7 +49,6 @@ def stop_all_DB(DBClient, compartment_ocids):
         while DB_instances.has_next_page:
             DB_instances = DBClient.list_db_systems(c, page=DB_instances.next_page)
             data.extend(DB_instances.data)
-        print " stoppping DB"
         #data is the list if the computes.
         for i in range(len(data)):
             if data[i].lifecycle_state == "AVAILABLE" or data[i].lifecycle_state == "PROVISIONING":
@@ -90,26 +89,11 @@ def stop_all_instances(compute, compartment_ocids):
             
     return shutdown_list
 
-def is_apac(current_time):
-    current_hour = current_time.hour
-    if current_hour >=0 and current_hour < 13:
-        return True
-    else:
-        return False
 
-def is_emea(current_time):
-    current_hour = current_time.hour
-    if current_hour >=10 and current_hour < 17:
-        return True
-    else: 
-        return False
-
-def is_amer(current_time):
-    current_hour = current_time.hour
-    if (current_hour >=0 and current_hour < 1) or (current_hour >= 16 and current_hour < 24):
-        return True
-    else:
-        return False
+def get_compartments_including_root(identity, root_id):
+    compartments_list = []
+    compartments_list.append(identity.get_compartment(root_id).data)
+    return get_compartments(identity, root_id, compartments_list, "root_included")
 
 
 #  Setting configuration
@@ -145,11 +129,16 @@ amer_shift_hours = eval(config["amer_shift_hours"])
 #print type(amer_shift_hours)
 #print amer_shift_hours
 #print not 22 in amer_shift_hours
+whole_compartments_list = get_compartments_including_root(identity, tenancy_id)
+for i in whole_compartments_list:
+    print i.name
+
+special_compartments_root_id = config["special_compartment"]
+special_compartments_list = get_compartments_including_root(identity, special_compartments_root_id)
+
 if not current_hour in apac_shift_hours:
     root_compartment_id = config["apac_root_compartment"]
-    compartments_list = []
-    compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list,"APAC")
+    compartments = get_compartments_including_root(identity, root_compartment_id)
     status = stop_all_instances(compute_client, compartments)
     status.extend(stop_all_DB(DB_client, compartments))
 
@@ -162,9 +151,7 @@ if not current_hour in apac_shift_hours:
 #if not is_emea(current_time):
 if not current_hour in emea_shift_hours:
     root_compartment_id = config["emea_root_compartment"]
-    compartments_list = []
-    compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list, "EMEA")
+    compartments = get_compartments_including_root(identity, root_compartment_id)
     status = stop_all_instances(compute_client, compartments)
     status.extend(stop_all_DB(DB_client, compartments))
 
@@ -177,9 +164,7 @@ if not current_hour in emea_shift_hours:
 #if not is_amer(current_time):
 if not current_hour in amer_shift_hours:
     root_compartment_id = config["amer_root_compartment"]
-    compartments_list = []
-    compartments_list.append(identity.get_compartment(root_compartment_id).data)
-    compartments = get_compartments(identity, root_compartment_id, compartments_list,"AMER")
+    compartments = get_compartments_including_root(identity, root_compartment_id)
     status = stop_all_instances(compute_client, compartments)
     status.extend(stop_all_DB(DB_client, compartments))
     if len(status) != 0:
