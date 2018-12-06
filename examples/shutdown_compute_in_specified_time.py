@@ -130,30 +130,40 @@ amer_shift_hours = eval(config["amer_shift_hours"])
 #print amer_shift_hours
 #print not 22 in amer_shift_hours
 whole_compartments_list = get_compartments_including_root(identity, tenancy_id)
-for i in whole_compartments_list:
-    print i.name
 
 special_compartments_root_id = config["special_compartment"]
 special_compartments_list = get_compartments_including_root(identity, special_compartments_root_id)
+apac_compartment_id = config["apac_root_compartment"]
+apac_compartments = get_compartments_including_root(identity, apac_compartment_id)
+emea_compartment_id = config["emea_root_compartment"]
+emea_compartments = get_compartments_including_root(identity, emea_compartment_id)
+amer_compartment_id = config["amer_root_compartment"]
+amer_compartments = get_compartments_including_root(identity, amer_compartment_id)
+
+#unexpected_compartments = set(whole_compartments_list) - set(special_compartments_list) - set(apac_compartments) - set(amer_compartment_id) - set(emea_compartment_id)
+unexpected_compartments = whole_compartments_list
+for i in apac_compartments:
+    unexpected_compartments.remove(i)
+for i in emea_compartments:
+    unexpected_compartments.remove(i)
+for i in amer_compartments:
+    unexpected_compartments.remove(i)
+for i in special_compartments_list:
+    unexpected_compartments.remove(i) 
 
 if not current_hour in apac_shift_hours:
-    root_compartment_id = config["apac_root_compartment"]
-    compartments = get_compartments_including_root(identity, root_compartment_id)
-    status = stop_all_instances(compute_client, compartments)
-    status.extend(stop_all_DB(DB_client, compartments))
-
+    status = stop_all_instances(compute_client, apac_compartments)
+    status.extend(stop_all_DB(DB_client, apac_compartments))
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
-            output += "APAC \t\t\t %s" % (status[i])
+            output += "APAC \t\t\t %s\n" % (status[i])
     
 
 #if not is_emea(current_time):
 if not current_hour in emea_shift_hours:
-    root_compartment_id = config["emea_root_compartment"]
-    compartments = get_compartments_including_root(identity, root_compartment_id)
-    status = stop_all_instances(compute_client, compartments)
-    status.extend(stop_all_DB(DB_client, compartments))
+    status = stop_all_instances(compute_client, emea_compartments)
+    status.extend(stop_all_DB(DB_client, emea_compartments))
 
     if len(status) != 0:
         shutdown_list += len(status)
@@ -163,14 +173,21 @@ if not current_hour in emea_shift_hours:
 
 #if not is_amer(current_time):
 if not current_hour in amer_shift_hours:
-    root_compartment_id = config["amer_root_compartment"]
-    compartments = get_compartments_including_root(identity, root_compartment_id)
-    status = stop_all_instances(compute_client, compartments)
-    status.extend(stop_all_DB(DB_client, compartments))
+    status = stop_all_instances(compute_client, amer_compartments)
+    status.extend(stop_all_DB(DB_client, amer_compartments))
     if len(status) != 0:
         shutdown_list += len(status)
         for i in range(len(status)):
             output += "AMER \t\t\t %s\n" % (status[i])
+
+#stopped all VMs in unexpected compartment
+status = stop_all_instances(compute_client, unexpected_compartments)
+status.extend(stop_all_DB(DB_client, unexpected_compartments))
+if len(status) != 0:
+    shutdown_list += len(status)
+    for i in status:
+        output += "Unexpected compartment\t\t\t %s\n" % (i)
+
 
 if shutdown_list !=0:
     print output

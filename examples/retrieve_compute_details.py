@@ -25,6 +25,7 @@ def get_compartments(identity, tenancy_id):
     compartment_ocids = []
     #  Store tenancy id as the first compartment
     # compartment_ocids.append(tenancy_id)
+    compartment_ocids.append(identity.get_compartment(tenancy_id).data)
     list_compartments_response = oci.pagination.list_call_get_all_results(
         identity.list_compartments,
         compartment_id=tenancy_id,
@@ -232,15 +233,29 @@ def get_all_db_system(dbs, compartment_ocids):
     content += "*Total DB cpu is %d \n" %(cpu)
     content += "*Total DB extra storage size is %d \n" % (size)
     content += special_monitoring
-
-        
-            
     
 #    content = instance_handling(list_of_db_systems)
     return content
+def get_all_buckets(object_storage_client, comparmments):
+    namespace = object_storage_client.get_namespace().data
+    object_buckets_list = []
+    for i in compartments:
+        object_buckets_list.extend(object_storage_client.list_buckets(namespace, i.id).data)
+    return object_buckets_list
 
-
-
+def get_all_object_size(object_storage_client, buckets):
+    content =  "  ================OBJECT Summry Report ========================\n"
+    content += "*total object size: \t "
+    namespace = object_storage_client.get_namespace().data
+    object_list = []
+    total_size = 0.000000000000000000000000
+    for i in buckets:
+        o_list=object_storage_client.list_objects(namespace, i.name,fields='name,size,timeCreated,md5').data.objects
+        object_list.extend(o_list)
+    for i in object_list:
+        total_size += i.size/1048576.000000000
+    content = content + str(total_size) + " MB\n"
+    return content
 #  Setting configuration
 #  Default path for configuration file is "~/.oci/config"
 #config = oci.config.from_file()
@@ -280,7 +295,14 @@ volume_content = get_all_volumes(block_storage_client, compartments)
 #send_report_out("Block Audit Report -"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content)
 db_client.base_client.set_region('us-ashburn-1')
 db_content = get_all_db_system(db_client,compartments)
-content = instance_content + volume_content + db_content
+#content = instance_content + volume_content + db_content
 to_list=(str(config["to_list"])).split(',')
 cc_list=(str(config["cc_list"])).split(',')
+#send_report_out("tenancy - " + tenancy_name + "-"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content,to_list,cc_list)
+### support object 
+object_storage_client = oci.object_storage.ObjectStorageClient(config)
+buckets = get_all_buckets(object_storage_client, compartments)
+object_content = get_all_object_size(object_storage_client,  buckets)
+content = instance_content + volume_content + db_content + object_content
 send_report_out("tenancy - " + tenancy_name + "-"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content,to_list,cc_list)
+
