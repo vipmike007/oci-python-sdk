@@ -5,7 +5,9 @@ import oci
 from oci.identity.models import AddUserToGroupDetails, CreateGroupDetails, CreateUserDetails
 
 # Default config file and profile
-config = oci.config.from_file()
+#config = oci.config.from_file()
+config = oci.config.from_file(file_location='~/.oci/config_test1', profile_name = "DEFAULT")
+
 compartment_id = config["tenancy"]
 # Service client
 identity = oci.identity.IdentityClient(config)
