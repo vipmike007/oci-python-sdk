@@ -269,6 +269,19 @@ else:
     print 'print error found'
     sys.exit(1)
 
+def check_storage_summary(nfs_storage_client, compartments, identity):
+    #get list of availability domain first
+    size = 0
+    for c in compartments:
+        a_domain_s = identity.list_availability_domains(c.id).data
+        for a in a_domain_s:
+            summary_list = nfs_storage_client.list_file_systems(c.id, a.name).data
+            if len(summary_list) != 0:
+                for j in summary_list:
+                    size += j.metered_bytes
+    
+    return size
+
 tenancy_id = config["tenancy"]
 
 #  Initiate the client with the locally available config.
@@ -304,5 +317,9 @@ object_storage_client = oci.object_storage.ObjectStorageClient(config)
 buckets = get_all_buckets(object_storage_client, compartments)
 object_content = get_all_object_size(object_storage_client,  buckets)
 content = instance_content + volume_content + db_content + object_content
+
+nfs_storage_client = oci.file_storage.FileStorageClient(config)
+nfs_storage = check_storage_summary(nfs_storage_client, compartments, identity)
+print nfs_storage
 send_report_out("tenancy - " + tenancy_name + "-"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content,to_list,cc_list)
 

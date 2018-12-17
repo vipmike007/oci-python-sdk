@@ -130,9 +130,14 @@ amer_shift_hours = eval(config["amer_shift_hours"])
 #print amer_shift_hours
 #print not 22 in amer_shift_hours
 whole_compartments_list = get_compartments_including_root(identity, tenancy_id)
+# this code is special for monitring units
+try:
+    special_compartments_root_id = config["special_compartment"]
+    special_compartments_list = get_compartments_including_root(identity, special_compartments_root_id)
 
-special_compartments_root_id = config["special_compartment"]
-special_compartments_list = get_compartments_including_root(identity, special_compartments_root_id)
+except:
+    special_compartments_list = []
+
 apac_compartment_id = config["apac_root_compartment"]
 apac_compartments = get_compartments_including_root(identity, apac_compartment_id)
 emea_compartment_id = config["emea_root_compartment"]
