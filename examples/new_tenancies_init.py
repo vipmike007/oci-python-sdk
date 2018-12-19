@@ -84,8 +84,8 @@ def delete_cron(tenany_name):
 #config = oci.config.from_file(file_location='~/.oci/gse00015003', profile_name = "gse00015003")
 config = {'region': 'us-ashburn-1', 'user': 'ocid1.user.oc1..aaaaaaaavmpzkgf5j6rwridbjox67wm7fctnjgg6g43bmmokiroqewqtnmya', 'log_requests': False, 'tenancy': 'ocid1.tenancy.oc1..aaaaaaaaqrol7kkrruav76ou65we6n4yj646gdt554ssiecdpqorr4jnyz7a', 'pass_phrase': None, 'fingerprint': '7a:4b:10:a2:5e:bf:d2:c0:d6:8c:0c:f7:27:6f:c7:7a', 'key_file': '/home/opc/.oci/oci_api_key.pem'} 
 if len(sys.argv) == 3:
-    config[tenancy] = sys.argv[1]
-    config[user] = sys.argv[2]
+    config['tenancy'] = sys.argv[1]
+    config['user'] = sys.argv[2]
 elif len(sys.argv) == 1:
     print "this is used for testing purpose, will delete soon after production"
     usage()
@@ -108,7 +108,7 @@ merge_dict['emea_shift_hours'] = [8,9,10,11,12,13,14,15,16]
 merge_dict['amer_shift_hours'] = [16,17,18,19,20,21,22,23,0]
 merge_dict['to_list'] = 'mike.cao@oracle.com,vipmike007@gmail.com'
 merge_dict['cc_list'] = ''
-merge_dict['special_compartment'] = 'ocid1.compartment.oc1..aaaaaaaa3hg6hurigmr4bdbngby6dcjiug24f2s4p5zpqw3akafe7in5cxua'
+merge_dict['special_compartment'] = ''
 
 # Service client
 #step1 getall compartment under root, if it has 
