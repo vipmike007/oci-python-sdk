@@ -58,6 +58,7 @@ def audit_handling(data):
     list_audits=[]
     audit_instance = audit_per_c()
     content = "event_time\t\tevent_name\t\ttype\tusername\n"
+    flag = 0
     for i in range(len(data)):
         if data[i].request_action != "GET":
             audit_instance.compartment_name = data[i].compartment_name
@@ -69,6 +70,9 @@ def audit_handling(data):
             #print data[i].request_action
             content += "%s\t%s\t\t%s\t%s \n" % (data[i].event_time.strftime("%Y-%m-%d-%H:%M:%S"), data[i].event_name,  data[i].request_action, data[i].user_name)
             list_audits.append(audit_instance)
+            flag = 1
+    if flag == 0:
+        content += "No Post||Create|Delete operation in last 12 hours in this tenancy! \n"
     return content
     #email = email_notification.Email()
     #email.send_mail("Audit Report Events_Time"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M:%S"),content)
@@ -105,8 +109,6 @@ def get_audit_events(audit, compartment_ocids, start_time, end_time):
     content = audit_handling(list_of_audit_events)
     return content
     #return str(list_of_audit_events)
-
-        
    #print type(list_of_audit_events[3])     #print list_of_audit_events[3]
         #return list_of_audit_events
 
@@ -118,6 +120,8 @@ if len(sys.argv) == 1:
     config = oci.config.from_file(file_location='~/.oci/config', profile_name = "DEFAULT")
 elif len(sys.argv) == 2:
     config = oci.config.from_file(file_location='~/.oci/config', profile_name = sys.argv[1])
+    tenancy_name = sys.argv[1]
+
 else:
     print 'print error found'
     sys.exit(1)
@@ -130,8 +134,8 @@ identity = oci.identity.IdentityClient(config)
 #  ListEvents expects timestamps into RFC3339 format.
 #  For the purposes of sample script, logs of last 1 days.
 end_time = datetime.datetime.utcnow()
-#start_time = end_time + datetime.timedelta(days=-1)
-start_time = end_time + datetime.timedelta(hours=-12)
+start_time = end_time + datetime.timedelta(days=-1)
+#start_time = end_time + datetime.timedelta(hours=-12)
 
 # This array will be used to store the list of available regions.
 regions = get_regions(identity)
@@ -139,8 +143,8 @@ regions = get_regions(identity)
 # This array will be used to store the list of compartments in the tenancy.
 compartments = get_compartments(identity, tenancy_id)
 
-for i in range(len(compartments)):
-    print compartments[i].name
+#for i in range(len(compartments)):
+  #  print compartments[i].name
 audit = oci.audit.audit_client.AuditClient(config)
 
 #  For each region get the logs for each compartment.
@@ -156,7 +160,8 @@ audit_events = get_audit_events(
         end_time)
 to_list=(str(config["to_list"])).split(',')
 cc_list=(str(config["cc_list"])).split(',')
-send_report_out("Operation Audit Report - "+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),audit_events,to_list,cc_list)
+print audit_events
+send_report_out(tenancy_name + " - Operation Audit Report - "+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),audit_events,to_list,cc_list)
 
 
 

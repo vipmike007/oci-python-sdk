@@ -68,6 +68,7 @@ def get_all_shapes(compute_client, compartment_ocids):
             print type(data[0])
         #print data
         #return data
+
 class monitor_instance_per_c:
     def __init__(self):
         self.instances_count = 0
@@ -221,7 +222,7 @@ def get_all_db_system(dbs, compartment_ocids):
     size = 0
     cpu = 0
     special_monitoring = ""
-    content += "================DB Summry Report Per Comparment========================\n"
+    content += "================Database Summry Report Per Comparment========================\n"
     for i in list_of_db_systems:
         if i.lifecycle_state == "AVAILABLE" or i.lifecycle_state == "PROVISIONING":
             count += 1
@@ -272,6 +273,9 @@ else:
 def check_storage_summary(nfs_storage_client, compartments, identity):
     #get list of availability domain first
     size = 0
+    content =  "  ================OBJECT Summry Report ========================\n"
+    content += "*total File System service size: \t "
+
     for c in compartments:
         a_domain_s = identity.list_availability_domains(c.id).data
         for a in a_domain_s:
@@ -280,7 +284,10 @@ def check_storage_summary(nfs_storage_client, compartments, identity):
                 for j in summary_list:
                     size += j.metered_bytes
     
-    return size
+    total_size = size / 1048576.000000000
+    content = content + str(total_size) + " MB\n"
+
+    return content
 
 tenancy_id = config["tenancy"]
 
@@ -320,6 +327,8 @@ content = instance_content + volume_content + db_content + object_content
 
 nfs_storage_client = oci.file_storage.FileStorageClient(config)
 nfs_storage = check_storage_summary(nfs_storage_client, compartments, identity)
-print nfs_storage
+
+content = instance_content + db_content + volume_content + object_content + nfs_storage
+print content
 send_report_out("tenancy - " + tenancy_name + "-"+datetime.datetime.utcnow().strftime("%Y-%m-%d-%H:%M"),content,to_list,cc_list)
 
