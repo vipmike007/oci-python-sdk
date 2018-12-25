@@ -33,10 +33,12 @@ def get_compartments(identity, tenancy_id, compartment_ocids, name):
             get_compartments(identity, c.id, compartment_ocids,c.name)
     return compartment_ocids
 
-
-def send_report_out(subject, content):
+def send_report_out(subject, content, to_list, cc_list):
     email_client = email_notification.Email()
+    email_client.mailto_list = to_list
+    email_client.mailcc_list = cc_list
     email_client.send_mail(subject, content)
+
 
 def stop_all_DB(DBClient, compartment_ocids):
     data = ""
@@ -89,7 +91,6 @@ def stop_all_instances(compute, compartment_ocids):
             
     return shutdown_list
 
-
 def get_compartments_including_root(identity, root_id):
     compartments_list = []
     compartments_list.append(identity.get_compartment(root_id).data)
@@ -102,6 +103,7 @@ if len(sys.argv) == 1:
     config = oci.config.from_file(file_location='~/.oci/config', profile_name = "DEFAULT")
 elif len(sys.argv) == 2:
     config = oci.config.from_file(file_location='~/.oci/config', profile_name = sys.argv[1])
+    tenancy_name = sys.argv[1]
 else:
     print 'print error found'
     sys.exit(1)
@@ -196,5 +198,7 @@ if len(status) != 0:
 
 if shutdown_list !=0:
     print output
-    send_report_out("Compute shutdown Report - "+ current_time.strftime("%Y-%m-%d-%H:%M"),output)
+    to_list =  config["to_list"]
+    cc_list = config ["cc_list"] 
+    send_report_out(tenancy_name + " - Compute/DB shutdown/termiation Report - "+ current_time.strftime("%Y-%m-%d-%H:%M"),output, to_list, cc_list)
 
