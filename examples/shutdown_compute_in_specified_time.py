@@ -198,7 +198,7 @@ if len(status) != 0:
 
 if shutdown_list !=0:
     print output
-    to_list =  config["to_list"]
-    cc_list = config ["cc_list"] 
+    to_list=(str(config["to_list"])).split(',')
+    cc_list=(str(config["cc_list"])).split(',')
     send_report_out(tenancy_name + " - Compute/DB shutdown/termiation Report - "+ current_time.strftime("%Y-%m-%d-%H:%M"),output, to_list, cc_list)
 
