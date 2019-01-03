@@ -124,7 +124,7 @@ def get_all_volumes(volume, compartment_ocids):
     content[1] += "================Volume Summry Report in total=======================\n"
     content[1] += "*Total volume count\t\t%d\n" % (volume_monitor_summary_all.instances_count)
     content[1] += "*Total Volume Size\t\t%dGB\n" % (volume_monitor_summary_all.instances_mem)
-    total_size = volume_monitor_summary_all.instances_mem*1024
+    total_size = volume_monitor_summary_all.instances_mem
     if total_size == 0:
         content[3] = 1
     elif total_size >0 and total_size <= 700:
@@ -204,7 +204,7 @@ def get_all_instances(compute, compartment_ocids):
         if instance_summary_report[i].running_instances_count !=0:
             content[2] += "*Compartment_name \t\t%s\n" % (instance_summary_report[i].oc.name)
             content[2] += "*Compartment DESC \t\t%s\n" % (instance_summary_report[i].oc.description)
-            content[2]+= "*Total instances count:\t\t%d\n" % (instance_summary_report[i].instances_count)
+            content[2] += "*Total instances count:\t\t%d\n" % (instance_summary_report[i].instances_count)
             content[2] += "*Running instances count:\t%d\n" % (instance_summary_report[i].running_instances_count)
             content[2] += "*Total instances CPU count:\t%d\n" % (instance_summary_report[i].instances_cpu)
             content[2] += "*Total instances mem count:\t%d\n" % (instance_summary_report[i].instances_mem)
