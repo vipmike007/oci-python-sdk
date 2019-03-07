@@ -22,6 +22,7 @@ Identity
     oci.identity.models.ApiKey
     oci.identity.models.AuthToken
     oci.identity.models.AvailabilityDomain
+    oci.identity.models.ChangeTagNamespaceCompartmentDetail
     oci.identity.models.Compartment
     oci.identity.models.CreateApiKeyDetails
     oci.identity.models.CreateAuthTokenDetails
@@ -45,11 +46,16 @@ Identity
     oci.identity.models.FaultDomain
     oci.identity.models.Group
     oci.identity.models.IdentityProvider
+    oci.identity.models.IdentityProviderGroupSummary
     oci.identity.models.IdpGroupMapping
+    oci.identity.models.MfaTotpDevice
+    oci.identity.models.MfaTotpDeviceSummary
+    oci.identity.models.MfaTotpToken
     oci.identity.models.Policy
     oci.identity.models.Region
     oci.identity.models.RegionSubscription
     oci.identity.models.Saml2IdentityProvider
+    oci.identity.models.ScimClientCredentials
     oci.identity.models.SmtpCredential
     oci.identity.models.SmtpCredentialSummary
     oci.identity.models.SwiftPassword
@@ -73,8 +79,10 @@ Identity
     oci.identity.models.UpdateSwiftPasswordDetails
     oci.identity.models.UpdateTagDetails
     oci.identity.models.UpdateTagNamespaceDetails
+    oci.identity.models.UpdateUserCapabilitiesDetails
     oci.identity.models.UpdateUserDetails
     oci.identity.models.User
+    oci.identity.models.UserCapabilities
     oci.identity.models.UserGroupMembership
     oci.identity.models.WorkRequest
     oci.identity.models.WorkRequestError

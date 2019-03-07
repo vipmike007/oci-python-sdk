@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -101,10 +101,11 @@ class TSIG(object):
         """
         **[Required]** Gets the algorithm of this TSIG.
         TSIG Algorithms are encoded as domain names, but most consist of only one
-        non-empty label, which is not required to be explicitly absolute. For a
-        full list of TSIG algorithms, see `Secret Key Transaction Authentication for DNS (TSIG) Algorithm Names`__
+        non-empty label, which is not required to be explicitly absolute.
+        Applicable algorithms include: hmac-sha1, hmac-sha224, hmac-sha256,
+        hmac-sha512. For more information on these algorithms, see `RFC 4635`__.
 
-        __ http://www.iana.org/assignments/tsig-algorithm-names/tsig-algorithm-names.xhtml#tsig-algorithm-names-1
+        __ https://tools.ietf.org/html/rfc4635#section-2
 
 
         :return: The algorithm of this TSIG.
@@ -117,10 +118,11 @@ class TSIG(object):
         """
         Sets the algorithm of this TSIG.
         TSIG Algorithms are encoded as domain names, but most consist of only one
-        non-empty label, which is not required to be explicitly absolute. For a
-        full list of TSIG algorithms, see `Secret Key Transaction Authentication for DNS (TSIG) Algorithm Names`__
+        non-empty label, which is not required to be explicitly absolute.
+        Applicable algorithms include: hmac-sha1, hmac-sha224, hmac-sha256,
+        hmac-sha512. For more information on these algorithms, see `RFC 4635`__.
 
-        __ http://www.iana.org/assignments/tsig-algorithm-names/tsig-algorithm-names.xhtml#tsig-algorithm-names-1
+        __ https://tools.ietf.org/html/rfc4635#section-2
 
 
         :param algorithm: The algorithm of this TSIG.

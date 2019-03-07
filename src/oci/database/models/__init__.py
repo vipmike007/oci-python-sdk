@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from __future__ import absolute_import
 
@@ -23,6 +23,7 @@ from .create_autonomous_database_details import CreateAutonomousDatabaseDetails
 from .create_backup_details import CreateBackupDetails
 from .create_data_guard_association_details import CreateDataGuardAssociationDetails
 from .create_data_guard_association_to_existing_db_system_details import CreateDataGuardAssociationToExistingDbSystemDetails
+from .create_data_guard_association_with_new_db_system_details import CreateDataGuardAssociationWithNewDbSystemDetails
 from .create_database_details import CreateDatabaseDetails
 from .create_database_from_backup_details import CreateDatabaseFromBackupDetails
 from .create_db_home_details import CreateDbHomeDetails
@@ -34,6 +35,7 @@ from .create_external_backup_job_details import CreateExternalBackupJobDetails
 from .data_guard_association import DataGuardAssociation
 from .data_guard_association_summary import DataGuardAssociationSummary
 from .database import Database
+from .database_connection_strings import DatabaseConnectionStrings
 from .database_summary import DatabaseSummary
 from .db_backup_config import DbBackupConfig
 from .db_home import DbHome
@@ -89,6 +91,7 @@ database_type_mapping = {
     "CreateBackupDetails": CreateBackupDetails,
     "CreateDataGuardAssociationDetails": CreateDataGuardAssociationDetails,
     "CreateDataGuardAssociationToExistingDbSystemDetails": CreateDataGuardAssociationToExistingDbSystemDetails,
+    "CreateDataGuardAssociationWithNewDbSystemDetails": CreateDataGuardAssociationWithNewDbSystemDetails,
     "CreateDatabaseDetails": CreateDatabaseDetails,
     "CreateDatabaseFromBackupDetails": CreateDatabaseFromBackupDetails,
     "CreateDbHomeDetails": CreateDbHomeDetails,
@@ -100,6 +103,7 @@ database_type_mapping = {
     "DataGuardAssociation": DataGuardAssociation,
     "DataGuardAssociationSummary": DataGuardAssociationSummary,
     "Database": Database,
+    "DatabaseConnectionStrings": DatabaseConnectionStrings,
     "DatabaseSummary": DatabaseSummary,
     "DbBackupConfig": DbBackupConfig,
     "DbHome": DbHome,

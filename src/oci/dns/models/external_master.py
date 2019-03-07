@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -74,7 +74,8 @@ class ExternalMaster(object):
     def port(self):
         """
         Gets the port of this ExternalMaster.
-        The server's port.
+        The server's port. Port value must be a value of 53, otherwise omit
+        the port value.
 
 
         :return: The port of this ExternalMaster.
@@ -86,7 +87,8 @@ class ExternalMaster(object):
     def port(self, port):
         """
         Sets the port of this ExternalMaster.
-        The server's port.
+        The server's port. Port value must be a value of 53, otherwise omit
+        the port value.
 
 
         :param port: The port of this ExternalMaster.

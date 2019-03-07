@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -138,7 +138,7 @@ class KeyVersion(object):
         **[Required]** Gets the time_created of this KeyVersion.
         The date and time this key version was created, expressed in `RFC 3339`__ timestamp format.
 
-        Example: `2018-04-03T21:10:29.600Z`
+        Example: \"2018-04-03T21:10:29.600Z\"
 
         __ https://tools.ietf.org/html/rfc3339
 
@@ -154,7 +154,7 @@ class KeyVersion(object):
         Sets the time_created of this KeyVersion.
         The date and time this key version was created, expressed in `RFC 3339`__ timestamp format.
 
-        Example: `2018-04-03T21:10:29.600Z`
+        Example: \"2018-04-03T21:10:29.600Z\"
 
         __ https://tools.ietf.org/html/rfc3339
 

@@ -5,6 +5,121 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog <http://keepachangelog.com/>`_.
 
 ====================
+2.2.1 - 2019-02-28
+====================
+
+Added
+-----
+* Support for the Monitoring service
+* Support for the Notification service
+* Support for the Resource Manager service
+* Support for the Compute Autoscaling service
+* Support for changing the compartment of a tag namespace in the Identity service
+* Support for specifying fault domains in the Database service
+* Support for managing instance monitoring in the Compute service
+* Support for attaching/detaching load balancers to instance pools in the Compute service
+
+====================
+2.2.0 - 2019-02-21
+====================
+
+Added
+-----
+* Support for government-realm regions
+* Support for the Streaming service
+* Support for tags in the Key Management service
+* Support for regional subnets in the Virtual Networking service
+
+Fixed
+-----
+* Removed unused Announcements service 'NotificationFollowupDetails' model and 'followups' from Announcement model
+
+====================
+2.1.7 - 2019-02-07
+====================
+
+Added
+-----
+* Support for the Web Application Acceleration and Security (WAAS) service
+* Support for the Health Checks service
+* Support for connection strings on Database resources in the Database service
+* Support for traffic management in the DNS service
+* Support for tagging in the Email service
+
+====================
+2.1.6 - 2019-01-31
+====================
+
+Added
+-----
+* Support for the Announcements service
+
+====================
+2.1.5 - 2019-01-24
+====================
+
+Added
+-----
+* Support for renaming databases during restore-from-backup operations in the Database service
+* Support for calling Oracle Cloud Infrastructure services in the ca-toronto-1 region
+
+Fixed
+-----
+* KmsCryptoClient and KmsManagementClient updated to make service_endpoint required
+* Explicitly imported path to idna. Addresses `GitHub issue 101 <https://github.com/oracle/oci-python-sdk/issues/101>`__
+
+====================
+2.1.4 - 2019-01-10
+====================
+
+Added
+-----
+* Support for device attributes on volume attachments in the Compute service
+* Support for custom header rulesets in the Load Balancing service
+
+====================
+2.1.3 - 2018-12-13
+====================
+
+Added
+-----
+* Support for Data Guard for VM shapes in the Database service
+* Support for sparse disk groups for Exadata shapes in the Database service
+* Support for a new field, isLatestForMajorVersion, when listing DB versions in the Database service
+* Support for in-transit encryption for paravirtualized boot volume and data volume attachments in the Block Storage service
+* Support for tagging DNS Zones in the DNS service
+* Support for resetting credentials for SCIM clients associated with an Identity provider and updating user capabilities in the Identity service
+
+Security
+-------
+* pyOpenSSL pinning was changed to pyOpenSSL>=17.5.0 and cryptography pinning to cryptography>=2.1.4 to address vulnerability `CVE-2018-1000808 <https://nvd.nist.gov/vuln/detail/CVE-2018-1000808>`__
+
+====================
+2.1.2 - 2018-11-29
+====================
+
+Added
+-----
+* Support for getting bucket statistics in the Object Storage service
+* Support for using FIPS compliant libcrypto library
+
+Fixed
+-----
+* Block Storage service for copying volume backups across regions is now enabled
+
+====================
+2.1.1 - 2018-11-15
+====================
+
+Added
+-----
+* Support for VCN transit routing in the Networking service
+
+Fixed
+-----
+* Fixed UploadManager to work with unbuffered streams in Python 3
+
+====================
 2.1.0 - 2018-11-01
 ====================
 
@@ -36,10 +151,6 @@ Added
 Changed
 -------
 * database_edition field in Backup and model changed from a free format string to a validated string. It will only accept one of the following: “STANDARD_EDITION”, “ENTERPRISE_EDITION”, “ENTERPRISE_EDITION_HIGH_PERFORMANCE”, “ENTERPRISE_EDITION_EXTREME_PERFORMANCE”
-
-Known issue
------------
-* Block Storage service for copying volume backups across regions is not enabled
 
 Breaking
 --------

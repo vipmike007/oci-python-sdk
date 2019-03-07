@@ -1,5 +1,5 @@
 # coding: utf-8
-# Modified Work: Copyright (c) 2018, 2018, Oracle and/or its affiliates. All rights reserved.
+# Modified Work: Copyright (c) 2018, 2019, Oracle and/or its affiliates. All rights reserved.
 # Copyright 2008-2016 Andrey Petrov and contributors
 
 """
@@ -168,7 +168,7 @@ def _dnsname_to_stdlib(name):
         that we can't just safely call `idna.encode`: it can explode for
         wildcard names. This avoids that problem.
         """
-        import idna
+        from oci._vendor import idna
 
         for prefix in [u'*.', u'.']:
             if name.startswith(prefix):

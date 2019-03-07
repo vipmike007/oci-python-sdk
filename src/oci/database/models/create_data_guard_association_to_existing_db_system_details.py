@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from .create_data_guard_association_details import CreateDataGuardAssociationDetails
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -9,7 +9,9 @@ from oci.decorators import init_model_state_from_kwargs
 @init_model_state_from_kwargs
 class CreateDataGuardAssociationToExistingDbSystemDetails(CreateDataGuardAssociationDetails):
     """
-    The configuration details for creating a Data Guard association to an existing database.
+    The configuration details for creating a Data Guard association for a bare metal DB system database. A standby database will be created in the DB system you specify.
+
+    To create a Data Guard association for a database in a virtual machine DB system, use the :func:`create_data_guard_association_with_new_db_system_details` subtype.
     """
 
     def __init__(self, **kwargs):
@@ -17,10 +19,6 @@ class CreateDataGuardAssociationToExistingDbSystemDetails(CreateDataGuardAssocia
         Initializes a new CreateDataGuardAssociationToExistingDbSystemDetails object with values from keyword arguments. The default value of the :py:attr:`~oci.database.models.CreateDataGuardAssociationToExistingDbSystemDetails.creation_type` attribute
         of this class is ``ExistingDbSystem`` and it should not be changed.
         The following keyword arguments are supported (corresponding to the getters/setters of this class):
-
-        :param creation_type:
-            The value to assign to the creation_type property of this CreateDataGuardAssociationToExistingDbSystemDetails.
-        :type creation_type: str
 
         :param database_admin_password:
             The value to assign to the database_admin_password property of this CreateDataGuardAssociationToExistingDbSystemDetails.
@@ -36,31 +34,35 @@ class CreateDataGuardAssociationToExistingDbSystemDetails(CreateDataGuardAssocia
             Allowed values for this property are: "SYNC", "ASYNC", "FASTSYNC"
         :type transport_type: str
 
+        :param creation_type:
+            The value to assign to the creation_type property of this CreateDataGuardAssociationToExistingDbSystemDetails.
+        :type creation_type: str
+
         :param peer_db_system_id:
             The value to assign to the peer_db_system_id property of this CreateDataGuardAssociationToExistingDbSystemDetails.
         :type peer_db_system_id: str
 
         """
         self.swagger_types = {
-            'creation_type': 'str',
             'database_admin_password': 'str',
             'protection_mode': 'str',
             'transport_type': 'str',
+            'creation_type': 'str',
             'peer_db_system_id': 'str'
         }
 
         self.attribute_map = {
-            'creation_type': 'creationType',
             'database_admin_password': 'databaseAdminPassword',
             'protection_mode': 'protectionMode',
             'transport_type': 'transportType',
+            'creation_type': 'creationType',
             'peer_db_system_id': 'peerDbSystemId'
         }
 
-        self._creation_type = None
         self._database_admin_password = None
         self._protection_mode = None
         self._transport_type = None
+        self._creation_type = None
         self._peer_db_system_id = None
         self._creation_type = 'ExistingDbSystem'
 
@@ -68,7 +70,8 @@ class CreateDataGuardAssociationToExistingDbSystemDetails(CreateDataGuardAssocia
     def peer_db_system_id(self):
         """
         Gets the peer_db_system_id of this CreateDataGuardAssociationToExistingDbSystemDetails.
-        The `OCID`__ of the DB system to create the standby database on.
+        The `OCID`__ of the DB system in which to create the standby database.
+        You must supply this value if creationType is `ExistingDbSystem`.
 
         __ https://docs.us-phoenix-1.oraclecloud.com/Content/General/Concepts/identifiers.htm
 
@@ -82,7 +85,8 @@ class CreateDataGuardAssociationToExistingDbSystemDetails(CreateDataGuardAssocia
     def peer_db_system_id(self, peer_db_system_id):
         """
         Sets the peer_db_system_id of this CreateDataGuardAssociationToExistingDbSystemDetails.
-        The `OCID`__ of the DB system to create the standby database on.
+        The `OCID`__ of the DB system in which to create the standby database.
+        You must supply this value if creationType is `ExistingDbSystem`.
 
         __ https://docs.us-phoenix-1.oraclecloud.com/Content/General/Concepts/identifiers.htm
 

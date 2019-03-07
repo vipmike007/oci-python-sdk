@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from __future__ import absolute_import
 import json
@@ -10,11 +10,15 @@ import random
 import re
 import string
 import uuid
+# This was added to address thread safety issues with datetime.strptime
+# See https://bugs.python.org/issue7980.
+import _strptime  # noqa: F401
 from datetime import date, datetime
 from timeit import default_timer as timer
 
 from oci._vendor import requests, six
 from dateutil.parser import parse
+from dateutil import tz
 
 from . import constants, exceptions, regions
 from .auth import signers
@@ -418,7 +422,7 @@ class BaseClient(object):
             return [self.sanitize_for_serialization(
                 sub_obj,
                 self.extract_list_item_type_from_swagger_type(declared_type) if declared_type else None,
-                field_name + '[*]')
+                field_name + '[*]' if field_name else None)
                 for sub_obj in obj]
         elif isinstance(obj, datetime):
             if not obj.tzinfo:
@@ -518,10 +522,19 @@ class BaseClient(object):
         # response.content is always bytes
         response_data = response_data.decode('utf8')
 
-        # TODO: not all valid json strings should be loaded as JSON.
-        # TODO: conditionally load json based on response_type.
         try:
-            response_data = json.loads(response_data)
+            json_response = json.loads(response_data)
+            # Load everything as JSON and then verify that the object returned
+            # is a string (six.text_type) if the response type is a string.
+            # This is matches the previous behavior, which happens to strip
+            # the embedded quotes in the get_namespace response.
+            # There is the potential that an API will declare that it returns
+            # a string and the string will be a valid JSON Object. In that case
+            # we do not update the response_data with the json_response.
+            # If we do later steps will fail because they are expecting the
+            # response_data to be a string.
+            if response_type != "str" or type(json_response) == six.text_type:
+                response_data = json_response
         except ValueError:
             pass
 
@@ -615,7 +628,12 @@ class BaseClient(object):
         :return: datetime.
         """
         try:
-            return datetime.strptime(string, "%Y-%m-%dT%H:%M:%S.%fZ")
+            # If this parser creates a date without raising an exception
+            # then the time zone is utc and needs to be set.
+            naivedatetime = datetime.strptime(string, "%Y-%m-%dT%H:%M:%S.%fZ")
+            awaredatetime = naivedatetime.replace(tzinfo=tz.tzutc())
+            return awaredatetime
+
         except ValueError:
             try:
                 return parse(string)

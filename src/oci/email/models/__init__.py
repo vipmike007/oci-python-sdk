@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from __future__ import absolute_import
 
@@ -9,6 +9,7 @@ from .sender import Sender
 from .sender_summary import SenderSummary
 from .suppression import Suppression
 from .suppression_summary import SuppressionSummary
+from .update_sender_details import UpdateSenderDetails
 
 # Maps type names to classes for email services.
 email_type_mapping = {
@@ -17,5 +18,6 @@ email_type_mapping = {
     "Sender": Sender,
     "SenderSummary": SenderSummary,
     "Suppression": Suppression,
-    "SuppressionSummary": SuppressionSummary
+    "SuppressionSummary": SuppressionSummary,
+    "UpdateSenderDetails": UpdateSenderDetails
 }

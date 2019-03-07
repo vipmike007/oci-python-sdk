@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -112,7 +112,7 @@ class CreateSubnetDetails(object):
     @property
     def availability_domain(self):
         """
-        **[Required]** Gets the availability_domain of this CreateSubnetDetails.
+        Gets the availability_domain of this CreateSubnetDetails.
         The availability domain to contain the subnet.
 
         Example: `Uocm:PHX-AD-1`

@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -23,6 +23,10 @@ class CreateIdentityProviderDetails(object):
     #: A constant which can be used with the protocol property of a CreateIdentityProviderDetails.
     #: This constant has a value of "SAML2"
     PROTOCOL_SAML2 = "SAML2"
+
+    #: A constant which can be used with the protocol property of a CreateIdentityProviderDetails.
+    #: This constant has a value of "ADFS"
+    PROTOCOL_ADFS = "ADFS"
 
     def __init__(self, **kwargs):
         """
@@ -52,7 +56,7 @@ class CreateIdentityProviderDetails(object):
 
         :param protocol:
             The value to assign to the protocol property of this CreateIdentityProviderDetails.
-            Allowed values for this property are: "SAML2"
+            Allowed values for this property are: "SAML2", "ADFS"
         :type protocol: str
 
         :param freeform_tags:
@@ -231,7 +235,7 @@ class CreateIdentityProviderDetails(object):
 
         Example: `SAML2`
 
-        Allowed values for this property are: "SAML2"
+        Allowed values for this property are: "SAML2", "ADFS"
 
 
         :return: The protocol of this CreateIdentityProviderDetails.
@@ -251,7 +255,7 @@ class CreateIdentityProviderDetails(object):
         :param protocol: The protocol of this CreateIdentityProviderDetails.
         :type: str
         """
-        allowed_values = ["SAML2"]
+        allowed_values = ["SAML2", "ADFS"]
         if not value_allowed_none_or_none_sentinel(protocol, allowed_values):
             raise ValueError(
                 "Invalid value for `protocol`, must be None or one of {0}"

@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from .attach_volume_details import AttachVolumeDetails
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -17,6 +17,10 @@ class AttachParavirtualizedVolumeDetails(AttachVolumeDetails):
         Initializes a new AttachParavirtualizedVolumeDetails object with values from keyword arguments. The default value of the :py:attr:`~oci.core.models.AttachParavirtualizedVolumeDetails.type` attribute
         of this class is ``paravirtualized`` and it should not be changed.
         The following keyword arguments are supported (corresponding to the getters/setters of this class):
+
+        :param device:
+            The value to assign to the device property of this AttachParavirtualizedVolumeDetails.
+        :type device: str
 
         :param display_name:
             The value to assign to the display_name property of this AttachParavirtualizedVolumeDetails.
@@ -38,29 +42,63 @@ class AttachParavirtualizedVolumeDetails(AttachVolumeDetails):
             The value to assign to the volume_id property of this AttachParavirtualizedVolumeDetails.
         :type volume_id: str
 
+        :param is_pv_encryption_in_transit_enabled:
+            The value to assign to the is_pv_encryption_in_transit_enabled property of this AttachParavirtualizedVolumeDetails.
+        :type is_pv_encryption_in_transit_enabled: bool
+
         """
         self.swagger_types = {
+            'device': 'str',
             'display_name': 'str',
             'instance_id': 'str',
             'is_read_only': 'bool',
             'type': 'str',
-            'volume_id': 'str'
+            'volume_id': 'str',
+            'is_pv_encryption_in_transit_enabled': 'bool'
         }
 
         self.attribute_map = {
+            'device': 'device',
             'display_name': 'displayName',
             'instance_id': 'instanceId',
             'is_read_only': 'isReadOnly',
             'type': 'type',
-            'volume_id': 'volumeId'
+            'volume_id': 'volumeId',
+            'is_pv_encryption_in_transit_enabled': 'isPvEncryptionInTransitEnabled'
         }
 
+        self._device = None
         self._display_name = None
         self._instance_id = None
         self._is_read_only = None
         self._type = None
         self._volume_id = None
+        self._is_pv_encryption_in_transit_enabled = None
         self._type = 'paravirtualized'
+
+    @property
+    def is_pv_encryption_in_transit_enabled(self):
+        """
+        Gets the is_pv_encryption_in_transit_enabled of this AttachParavirtualizedVolumeDetails.
+        Whether to enable encryption in transit for the PV data volume attachment. Defaults to false.
+
+
+        :return: The is_pv_encryption_in_transit_enabled of this AttachParavirtualizedVolumeDetails.
+        :rtype: bool
+        """
+        return self._is_pv_encryption_in_transit_enabled
+
+    @is_pv_encryption_in_transit_enabled.setter
+    def is_pv_encryption_in_transit_enabled(self, is_pv_encryption_in_transit_enabled):
+        """
+        Sets the is_pv_encryption_in_transit_enabled of this AttachParavirtualizedVolumeDetails.
+        Whether to enable encryption in transit for the PV data volume attachment. Defaults to false.
+
+
+        :param is_pv_encryption_in_transit_enabled: The is_pv_encryption_in_transit_enabled of this AttachParavirtualizedVolumeDetails.
+        :type: bool
+        """
+        self._is_pv_encryption_in_transit_enabled = is_pv_encryption_in_transit_enabled
 
     def __repr__(self):
         return formatted_flat_dict(self)

@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -275,7 +275,7 @@ class TagNamespaceSummary(object):
     def time_created(self):
         """
         Gets the time_created of this TagNamespaceSummary.
-        Date and time the tagNamespace was created, in the format defined by RFC3339.
+        Date and time the tag namespace was created, in the format defined by RFC3339.
         Example: `2016-08-25T21:10:29.600Z`
 
 
@@ -288,7 +288,7 @@ class TagNamespaceSummary(object):
     def time_created(self, time_created):
         """
         Sets the time_created of this TagNamespaceSummary.
-        Date and time the tagNamespace was created, in the format defined by RFC3339.
+        Date and time the tag namespace was created, in the format defined by RFC3339.
         Example: `2016-08-25T21:10:29.600Z`
 
 

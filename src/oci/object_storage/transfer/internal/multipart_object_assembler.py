@@ -1,9 +1,10 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 import io
 import hashlib
 import base64
+from . import md5 as MD5
 from multiprocessing.dummy import Pool
 from os import stat
 from ..constants import DEFAULT_PART_SIZE
@@ -15,6 +16,7 @@ from oci.exceptions import RequestException
 from oci._vendor.six.moves.queue import Queue
 from threading import Semaphore
 from oci._vendor import six
+from oci.fips import is_fips_mode
 
 READ_BUFFER_SIZE = 8 * 1024
 DEFAULT_PARALLEL_PROCESS_COUNT = 3
@@ -129,7 +131,15 @@ class MultipartObjectAssembler:
         :return: Base64 encoded MD5 hash
         :rtype: str
         """
-        m = hashlib.md5()
+
+        # Determine if we can use the hashlib version of md5 or the bundled
+        # version of md5
+        if is_fips_mode():
+            md5 = MD5.md5
+        else:
+            md5 = hashlib.md5
+
+        m = md5()
         with io.open(file_path, mode='rb') as f:
             bpr = BufferedPartReader(f, offset, chunk)
             while True:
@@ -468,7 +478,7 @@ class MultipartObjectAssembler:
         # We pull data from the stream until there is no more
         keep_reading = True
         while keep_reading:
-            if six.PY3:
+            if six.PY3 and hasattr(stream_ref, 'buffer'):
                 read_bytes = stream_ref.buffer.read(self.part_size)
             else:
                 read_bytes = stream_ref.read(self.part_size)
