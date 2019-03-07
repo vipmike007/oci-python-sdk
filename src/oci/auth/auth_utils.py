@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from oci._vendor import six
 
@@ -12,6 +12,8 @@ def get_tenancy_id_from_certificate(cert):
         val = name_attribute.value
         if val.startswith('opc-tenant:'):
             return val[len('opc-tenant:'):]
+        if val.startswith('opc-identity:'):
+            return val[len('opc-identity:'):]
 
     raise RuntimeError('The certificate does not contain a tenancy OCID')
 

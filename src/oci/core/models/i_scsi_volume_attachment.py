@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from .volume_attachment import VolumeAttachment
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -30,6 +30,10 @@ class IScsiVolumeAttachment(VolumeAttachment):
             The value to assign to the compartment_id property of this IScsiVolumeAttachment.
         :type compartment_id: str
 
+        :param device:
+            The value to assign to the device property of this IScsiVolumeAttachment.
+        :type device: str
+
         :param display_name:
             The value to assign to the display_name property of this IScsiVolumeAttachment.
         :type display_name: str
@@ -59,6 +63,10 @@ class IScsiVolumeAttachment(VolumeAttachment):
             The value to assign to the volume_id property of this IScsiVolumeAttachment.
         :type volume_id: str
 
+        :param is_pv_encryption_in_transit_enabled:
+            The value to assign to the is_pv_encryption_in_transit_enabled property of this IScsiVolumeAttachment.
+        :type is_pv_encryption_in_transit_enabled: bool
+
         :param chap_secret:
             The value to assign to the chap_secret property of this IScsiVolumeAttachment.
         :type chap_secret: str
@@ -84,6 +92,7 @@ class IScsiVolumeAttachment(VolumeAttachment):
             'attachment_type': 'str',
             'availability_domain': 'str',
             'compartment_id': 'str',
+            'device': 'str',
             'display_name': 'str',
             'id': 'str',
             'instance_id': 'str',
@@ -91,6 +100,7 @@ class IScsiVolumeAttachment(VolumeAttachment):
             'lifecycle_state': 'str',
             'time_created': 'datetime',
             'volume_id': 'str',
+            'is_pv_encryption_in_transit_enabled': 'bool',
             'chap_secret': 'str',
             'chap_username': 'str',
             'ipv4': 'str',
@@ -102,6 +112,7 @@ class IScsiVolumeAttachment(VolumeAttachment):
             'attachment_type': 'attachmentType',
             'availability_domain': 'availabilityDomain',
             'compartment_id': 'compartmentId',
+            'device': 'device',
             'display_name': 'displayName',
             'id': 'id',
             'instance_id': 'instanceId',
@@ -109,6 +120,7 @@ class IScsiVolumeAttachment(VolumeAttachment):
             'lifecycle_state': 'lifecycleState',
             'time_created': 'timeCreated',
             'volume_id': 'volumeId',
+            'is_pv_encryption_in_transit_enabled': 'isPvEncryptionInTransitEnabled',
             'chap_secret': 'chapSecret',
             'chap_username': 'chapUsername',
             'ipv4': 'ipv4',
@@ -119,6 +131,7 @@ class IScsiVolumeAttachment(VolumeAttachment):
         self._attachment_type = None
         self._availability_domain = None
         self._compartment_id = None
+        self._device = None
         self._display_name = None
         self._id = None
         self._instance_id = None
@@ -126,6 +139,7 @@ class IScsiVolumeAttachment(VolumeAttachment):
         self._lifecycle_state = None
         self._time_created = None
         self._volume_id = None
+        self._is_pv_encryption_in_transit_enabled = None
         self._chap_secret = None
         self._chap_username = None
         self._ipv4 = None

@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -42,7 +42,7 @@ class CreateSuppressionDetails(object):
     @property
     def compartment_id(self):
         """
-        Gets the compartment_id of this CreateSuppressionDetails.
+        **[Required]** Gets the compartment_id of this CreateSuppressionDetails.
         The OCID of the compartment to contain the suppression. Since
         suppressions are at the customer level, this must be the tenancy
         OCID.
@@ -70,7 +70,7 @@ class CreateSuppressionDetails(object):
     @property
     def email_address(self):
         """
-        Gets the email_address of this CreateSuppressionDetails.
+        **[Required]** Gets the email_address of this CreateSuppressionDetails.
         The recipient email address of the suppression.
 
 

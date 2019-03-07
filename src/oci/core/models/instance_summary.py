@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -57,6 +57,10 @@ class InstanceSummary(object):
             The value to assign to the time_created property of this InstanceSummary.
         :type time_created: datetime
 
+        :param load_balancer_backends:
+            The value to assign to the load_balancer_backends property of this InstanceSummary.
+        :type load_balancer_backends: list[InstancePoolInstanceLoadBalancerBackend]
+
         """
         self.swagger_types = {
             'id': 'str',
@@ -68,7 +72,8 @@ class InstanceSummary(object):
             'region': 'str',
             'shape': 'str',
             'state': 'str',
-            'time_created': 'datetime'
+            'time_created': 'datetime',
+            'load_balancer_backends': 'list[InstancePoolInstanceLoadBalancerBackend]'
         }
 
         self.attribute_map = {
@@ -81,7 +86,8 @@ class InstanceSummary(object):
             'region': 'region',
             'shape': 'shape',
             'state': 'state',
-            'time_created': 'timeCreated'
+            'time_created': 'timeCreated',
+            'load_balancer_backends': 'loadBalancerBackends'
         }
 
         self._id = None
@@ -94,6 +100,7 @@ class InstanceSummary(object):
         self._shape = None
         self._state = None
         self._time_created = None
+        self._load_balancer_backends = None
 
     @property
     def id(self):
@@ -342,6 +349,30 @@ class InstanceSummary(object):
         :type: datetime
         """
         self._time_created = time_created
+
+    @property
+    def load_balancer_backends(self):
+        """
+        Gets the load_balancer_backends of this InstanceSummary.
+        The load balancer backends configured for the instance pool instance.
+
+
+        :return: The load_balancer_backends of this InstanceSummary.
+        :rtype: list[InstancePoolInstanceLoadBalancerBackend]
+        """
+        return self._load_balancer_backends
+
+    @load_balancer_backends.setter
+    def load_balancer_backends(self, load_balancer_backends):
+        """
+        Sets the load_balancer_backends of this InstanceSummary.
+        The load balancer backends configured for the instance pool instance.
+
+
+        :param load_balancer_backends: The load_balancer_backends of this InstanceSummary.
+        :type: list[InstancePoolInstanceLoadBalancerBackend]
+        """
+        self._load_balancer_backends = load_balancer_backends
 
     def __repr__(self):
         return formatted_flat_dict(self)

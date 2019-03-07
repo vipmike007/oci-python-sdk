@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from __future__ import absolute_import
 
@@ -74,6 +74,7 @@ class VirtualNetworkClient(object):
             'service_endpoint': kwargs.get('service_endpoint'),
             'timeout': kwargs.get('timeout'),
             'base_path': '/20160918',
+            'service_endpoint_template': 'https://iaas.{region}.{secondLevelDomain}',
             'skip_deserialization': kwargs.get('skip_deserialization', False)
         }
         self.base_client = BaseClient("virtual_network", config, signer, core_type_mapping, **base_client_init_kwargs)
@@ -9389,7 +9390,7 @@ class VirtualNetworkClient(object):
         :func:`delete_public_ip`, which
         unassigns and deletes the ephemeral public IP.
 
-        **Note:** If a public IP (either ephemeral or reserved) is assigned to a secondary private
+        **Note:** If a public IP is assigned to a secondary private
         IP (see :class:`PrivateIp`), and you move that secondary
         private IP to another VNIC, the public IP moves with it.
 

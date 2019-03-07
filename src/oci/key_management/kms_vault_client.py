@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from __future__ import absolute_import
 
@@ -548,9 +548,9 @@ class KmsVaultClient(object):
     def update_vault(self, vault_id, update_vault_details, **kwargs):
         """
         UpdateVault
-        Updates the properties of a vault. Specifically, you can
-        only update the `displayName` property. Furthermore, the vault
-        must be in an `ACTIVE` or `CREATING` state.
+        Updates the properties of a vault. Specifically, you can update the
+        `displayName` , `freeformTags`, and `definedTags` properties. Furthermore,
+        the vault must be in an `ACTIVE` or `CREATING` state.
 
 
         :param str vault_id: (required)

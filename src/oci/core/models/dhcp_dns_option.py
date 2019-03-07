@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 from .dhcp_option import DhcpOption
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -71,7 +71,7 @@ class DhcpDnsOption(DhcpOption):
         """
         Gets the custom_dns_servers of this DhcpDnsOption.
         If you set `serverType` to `CustomDnsServer`, specify the
-        IP address of at least one DNS server of your choice (three maximum). gd
+        IP address of at least one DNS server of your choice (three maximum).
 
 
         :return: The custom_dns_servers of this DhcpDnsOption.
@@ -84,7 +84,7 @@ class DhcpDnsOption(DhcpOption):
         """
         Sets the custom_dns_servers of this DhcpDnsOption.
         If you set `serverType` to `CustomDnsServer`, specify the
-        IP address of at least one DNS server of your choice (three maximum). gd
+        IP address of at least one DNS server of your choice (three maximum).
 
 
         :param custom_dns_servers: The custom_dns_servers of this DhcpDnsOption.

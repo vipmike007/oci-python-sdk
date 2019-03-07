@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -119,7 +119,7 @@ class VolumeBackupSchedule(object):
     def offset_seconds(self):
         """
         **[Required]** Gets the offset_seconds of this VolumeBackupSchedule.
-        The number of seconds (positive or negative) that the backup time should be shifted from the default interval boundaries specified by the period.
+        The number of seconds (positive or negative) that the backup time should be shifted from the default interval boundaries specified by the period. Backup time = Frequency start time + Offset.
 
 
         :return: The offset_seconds of this VolumeBackupSchedule.
@@ -131,7 +131,7 @@ class VolumeBackupSchedule(object):
     def offset_seconds(self, offset_seconds):
         """
         Sets the offset_seconds of this VolumeBackupSchedule.
-        The number of seconds (positive or negative) that the backup time should be shifted from the default interval boundaries specified by the period.
+        The number of seconds (positive or negative) that the backup time should be shifted from the default interval boundaries specified by the period. Backup time = Frequency start time + Offset.
 
 
         :param offset_seconds: The offset_seconds of this VolumeBackupSchedule.

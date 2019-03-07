@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -66,6 +66,10 @@ class LaunchInstanceDetails(object):
             The value to assign to the metadata property of this LaunchInstanceDetails.
         :type metadata: dict(str, str)
 
+        :param agent_config:
+            The value to assign to the agent_config property of this LaunchInstanceDetails.
+        :type agent_config: LaunchInstanceAgentConfigDetails
+
         :param shape:
             The value to assign to the shape property of this LaunchInstanceDetails.
         :type shape: str
@@ -77,6 +81,10 @@ class LaunchInstanceDetails(object):
         :param subnet_id:
             The value to assign to the subnet_id property of this LaunchInstanceDetails.
         :type subnet_id: str
+
+        :param is_pv_encryption_in_transit_enabled:
+            The value to assign to the is_pv_encryption_in_transit_enabled property of this LaunchInstanceDetails.
+        :type is_pv_encryption_in_transit_enabled: bool
 
         """
         self.swagger_types = {
@@ -92,9 +100,11 @@ class LaunchInstanceDetails(object):
             'image_id': 'str',
             'ipxe_script': 'str',
             'metadata': 'dict(str, str)',
+            'agent_config': 'LaunchInstanceAgentConfigDetails',
             'shape': 'str',
             'source_details': 'InstanceSourceDetails',
-            'subnet_id': 'str'
+            'subnet_id': 'str',
+            'is_pv_encryption_in_transit_enabled': 'bool'
         }
 
         self.attribute_map = {
@@ -110,9 +120,11 @@ class LaunchInstanceDetails(object):
             'image_id': 'imageId',
             'ipxe_script': 'ipxeScript',
             'metadata': 'metadata',
+            'agent_config': 'agentConfig',
             'shape': 'shape',
             'source_details': 'sourceDetails',
-            'subnet_id': 'subnetId'
+            'subnet_id': 'subnetId',
+            'is_pv_encryption_in_transit_enabled': 'isPvEncryptionInTransitEnabled'
         }
 
         self._availability_domain = None
@@ -127,9 +139,11 @@ class LaunchInstanceDetails(object):
         self._image_id = None
         self._ipxe_script = None
         self._metadata = None
+        self._agent_config = None
         self._shape = None
         self._source_details = None
         self._subnet_id = None
+        self._is_pv_encryption_in_transit_enabled = None
 
     @property
     def availability_domain(self):
@@ -660,6 +674,26 @@ class LaunchInstanceDetails(object):
         self._metadata = metadata
 
     @property
+    def agent_config(self):
+        """
+        Gets the agent_config of this LaunchInstanceDetails.
+
+        :return: The agent_config of this LaunchInstanceDetails.
+        :rtype: LaunchInstanceAgentConfigDetails
+        """
+        return self._agent_config
+
+    @agent_config.setter
+    def agent_config(self, agent_config):
+        """
+        Sets the agent_config of this LaunchInstanceDetails.
+
+        :param agent_config: The agent_config of this LaunchInstanceDetails.
+        :type: LaunchInstanceAgentConfigDetails
+        """
+        self._agent_config = agent_config
+
+    @property
     def shape(self):
         """
         **[Required]** Gets the shape of this LaunchInstanceDetails.
@@ -742,6 +776,30 @@ class LaunchInstanceDetails(object):
         :type: str
         """
         self._subnet_id = subnet_id
+
+    @property
+    def is_pv_encryption_in_transit_enabled(self):
+        """
+        Gets the is_pv_encryption_in_transit_enabled of this LaunchInstanceDetails.
+        Whether to enable encryption in transit for the PV boot volume attachment. Defaults to false.
+
+
+        :return: The is_pv_encryption_in_transit_enabled of this LaunchInstanceDetails.
+        :rtype: bool
+        """
+        return self._is_pv_encryption_in_transit_enabled
+
+    @is_pv_encryption_in_transit_enabled.setter
+    def is_pv_encryption_in_transit_enabled(self, is_pv_encryption_in_transit_enabled):
+        """
+        Sets the is_pv_encryption_in_transit_enabled of this LaunchInstanceDetails.
+        Whether to enable encryption in transit for the PV boot volume attachment. Defaults to false.
+
+
+        :param is_pv_encryption_in_transit_enabled: The is_pv_encryption_in_transit_enabled of this LaunchInstanceDetails.
+        :type: bool
+        """
+        self._is_pv_encryption_in_transit_enabled = is_pv_encryption_in_transit_enabled
 
     def __repr__(self):
         return formatted_flat_dict(self)

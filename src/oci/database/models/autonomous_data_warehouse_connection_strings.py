@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -17,65 +17,41 @@ class AutonomousDataWarehouseConnectionStrings(object):
         Initializes a new AutonomousDataWarehouseConnectionStrings object with values from keyword arguments.
         The following keyword arguments are supported (corresponding to the getters/setters of this class):
 
-        :param all_connection_strings:
-            The value to assign to the all_connection_strings property of this AutonomousDataWarehouseConnectionStrings.
-        :type all_connection_strings: dict(str, str)
-
         :param high:
             The value to assign to the high property of this AutonomousDataWarehouseConnectionStrings.
         :type high: str
-
-        :param low:
-            The value to assign to the low property of this AutonomousDataWarehouseConnectionStrings.
-        :type low: str
 
         :param medium:
             The value to assign to the medium property of this AutonomousDataWarehouseConnectionStrings.
         :type medium: str
 
+        :param low:
+            The value to assign to the low property of this AutonomousDataWarehouseConnectionStrings.
+        :type low: str
+
+        :param all_connection_strings:
+            The value to assign to the all_connection_strings property of this AutonomousDataWarehouseConnectionStrings.
+        :type all_connection_strings: dict(str, str)
+
         """
         self.swagger_types = {
-            'all_connection_strings': 'dict(str, str)',
             'high': 'str',
+            'medium': 'str',
             'low': 'str',
-            'medium': 'str'
+            'all_connection_strings': 'dict(str, str)'
         }
 
         self.attribute_map = {
-            'all_connection_strings': 'allConnectionStrings',
             'high': 'high',
+            'medium': 'medium',
             'low': 'low',
-            'medium': 'medium'
+            'all_connection_strings': 'allConnectionStrings'
         }
 
-        self._all_connection_strings = None
         self._high = None
-        self._low = None
         self._medium = None
-
-    @property
-    def all_connection_strings(self):
-        """
-        Gets the all_connection_strings of this AutonomousDataWarehouseConnectionStrings.
-        All connection strings to use to connect to the Data Warehouse.
-
-
-        :return: The all_connection_strings of this AutonomousDataWarehouseConnectionStrings.
-        :rtype: dict(str, str)
-        """
-        return self._all_connection_strings
-
-    @all_connection_strings.setter
-    def all_connection_strings(self, all_connection_strings):
-        """
-        Sets the all_connection_strings of this AutonomousDataWarehouseConnectionStrings.
-        All connection strings to use to connect to the Data Warehouse.
-
-
-        :param all_connection_strings: The all_connection_strings of this AutonomousDataWarehouseConnectionStrings.
-        :type: dict(str, str)
-        """
-        self._all_connection_strings = all_connection_strings
+        self._low = None
+        self._all_connection_strings = None
 
     @property
     def high(self):
@@ -102,6 +78,30 @@ class AutonomousDataWarehouseConnectionStrings(object):
         self._high = high
 
     @property
+    def medium(self):
+        """
+        Gets the medium of this AutonomousDataWarehouseConnectionStrings.
+        The Medium database service provides a lower level of resources to each SQL statement potentially resulting a lower level of performance, but supports more concurrent SQL statements.
+
+
+        :return: The medium of this AutonomousDataWarehouseConnectionStrings.
+        :rtype: str
+        """
+        return self._medium
+
+    @medium.setter
+    def medium(self, medium):
+        """
+        Sets the medium of this AutonomousDataWarehouseConnectionStrings.
+        The Medium database service provides a lower level of resources to each SQL statement potentially resulting a lower level of performance, but supports more concurrent SQL statements.
+
+
+        :param medium: The medium of this AutonomousDataWarehouseConnectionStrings.
+        :type: str
+        """
+        self._medium = medium
+
+    @property
     def low(self):
         """
         Gets the low of this AutonomousDataWarehouseConnectionStrings.
@@ -126,28 +126,34 @@ class AutonomousDataWarehouseConnectionStrings(object):
         self._low = low
 
     @property
-    def medium(self):
+    def all_connection_strings(self):
         """
-        Gets the medium of this AutonomousDataWarehouseConnectionStrings.
-        The Medium database service provides a lower level of resources to each SQL statement potentially resulting a lower level of performance, but supports more concurrent SQL statements.
+        Gets the all_connection_strings of this AutonomousDataWarehouseConnectionStrings.
+        Returns all connection strings that can be used to connect to the Autonomous Data Warehouse.
+        For more information, please see `Predefined Database Service Names for Autonomous Transaction Processing`__
+
+        __ https://docs.oracle.com/en/cloud/paas/atp-cloud/atpug/connect-predefined.html#GUID-9747539B-FD46-44F1-8FF8-F5AC650F15BE
 
 
-        :return: The medium of this AutonomousDataWarehouseConnectionStrings.
-        :rtype: str
+        :return: The all_connection_strings of this AutonomousDataWarehouseConnectionStrings.
+        :rtype: dict(str, str)
         """
-        return self._medium
+        return self._all_connection_strings
 
-    @medium.setter
-    def medium(self, medium):
+    @all_connection_strings.setter
+    def all_connection_strings(self, all_connection_strings):
         """
-        Sets the medium of this AutonomousDataWarehouseConnectionStrings.
-        The Medium database service provides a lower level of resources to each SQL statement potentially resulting a lower level of performance, but supports more concurrent SQL statements.
+        Sets the all_connection_strings of this AutonomousDataWarehouseConnectionStrings.
+        Returns all connection strings that can be used to connect to the Autonomous Data Warehouse.
+        For more information, please see `Predefined Database Service Names for Autonomous Transaction Processing`__
+
+        __ https://docs.oracle.com/en/cloud/paas/atp-cloud/atpug/connect-predefined.html#GUID-9747539B-FD46-44F1-8FF8-F5AC650F15BE
 
 
-        :param medium: The medium of this AutonomousDataWarehouseConnectionStrings.
-        :type: str
+        :param all_connection_strings: The all_connection_strings of this AutonomousDataWarehouseConnectionStrings.
+        :type: dict(str, str)
         """
-        self._medium = medium
+        self._all_connection_strings = all_connection_strings
 
     def __repr__(self):
         return formatted_flat_dict(self)

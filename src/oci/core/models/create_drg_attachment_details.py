@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 
 
 from oci.util import formatted_flat_dict, NONE_SENTINEL, value_allowed_none_or_none_sentinel  # noqa: F401
@@ -25,6 +25,10 @@ class CreateDrgAttachmentDetails(object):
             The value to assign to the drg_id property of this CreateDrgAttachmentDetails.
         :type drg_id: str
 
+        :param route_table_id:
+            The value to assign to the route_table_id property of this CreateDrgAttachmentDetails.
+        :type route_table_id: str
+
         :param vcn_id:
             The value to assign to the vcn_id property of this CreateDrgAttachmentDetails.
         :type vcn_id: str
@@ -33,17 +37,20 @@ class CreateDrgAttachmentDetails(object):
         self.swagger_types = {
             'display_name': 'str',
             'drg_id': 'str',
+            'route_table_id': 'str',
             'vcn_id': 'str'
         }
 
         self.attribute_map = {
             'display_name': 'displayName',
             'drg_id': 'drgId',
+            'route_table_id': 'routeTableId',
             'vcn_id': 'vcnId'
         }
 
         self._display_name = None
         self._drg_id = None
+        self._route_table_id = None
         self._vcn_id = None
 
     @property
@@ -93,6 +100,48 @@ class CreateDrgAttachmentDetails(object):
         :type: str
         """
         self._drg_id = drg_id
+
+    @property
+    def route_table_id(self):
+        """
+        Gets the route_table_id of this CreateDrgAttachmentDetails.
+        The OCID of the route table the DRG attachment will use.
+
+        If you don't specify a route table here, the DRG attachment is created without an associated route
+        table. The Networking service does NOT automatically associate the attached VCN's default route table
+        with the DRG attachment.
+
+        For information about why you would associate a route table with a DRG attachment, see
+        `Advanced Scenario: Transit Routing`__.
+
+        __ https://docs.us-phoenix-1.oraclecloud.com/Content/Network/Tasks/transitrouting.htm
+
+
+        :return: The route_table_id of this CreateDrgAttachmentDetails.
+        :rtype: str
+        """
+        return self._route_table_id
+
+    @route_table_id.setter
+    def route_table_id(self, route_table_id):
+        """
+        Sets the route_table_id of this CreateDrgAttachmentDetails.
+        The OCID of the route table the DRG attachment will use.
+
+        If you don't specify a route table here, the DRG attachment is created without an associated route
+        table. The Networking service does NOT automatically associate the attached VCN's default route table
+        with the DRG attachment.
+
+        For information about why you would associate a route table with a DRG attachment, see
+        `Advanced Scenario: Transit Routing`__.
+
+        __ https://docs.us-phoenix-1.oraclecloud.com/Content/Network/Tasks/transitrouting.htm
+
+
+        :param route_table_id: The route_table_id of this CreateDrgAttachmentDetails.
+        :type: str
+        """
+        self._route_table_id = route_table_id
 
     @property
     def vcn_id(self):
