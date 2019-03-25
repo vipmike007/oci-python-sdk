@@ -43,6 +43,8 @@ def get_mem_by_shape(shape_name):
     mem_list = {'VM.Standard1.1':7,
             'VM.Standard2.1':15,
             'VM.Standard2.2':30,
+            'VM.StandardE2.1':8,
+            'VM.StandardE2.2':16,
             'VM.Standard1.2':14,
             'VM.Standard1.4':28}
     return mem_list[shape_name]
@@ -51,6 +53,8 @@ def get_cpu_by_shape(shape_name):
     cpu_list = {'VM.Standard1.1':1,
             'VM.Standard2.1':1,
             'VM.Standard2.2':2,
+            'VM.StandardE2.1':1,
+            'VM.StandardE2.2':2,
             'VM.Standard1.2':2,
             'VM.Standard1.4':4}
     return cpu_list[shape_name]
